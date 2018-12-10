@@ -4,7 +4,7 @@ $APPLICATION->SetTitle("Создание комнат");
 ?>
 
     <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">
-        <h4 class="form-box-header">Создание комнат</h4>
+        <h4 class="form-box-header">Создание Аудиторий</h4>
         <div class="form-box-content">
             <!-- Colorpicker for Bootstrap (classes are initialized in js/main.js -> uiInit()), for extra usage examples you can check out http://www.eyecon.ro/bootstrap-colorpicker/ -->
             <div class="form-group">
@@ -31,8 +31,62 @@ $APPLICATION->SetTitle("Создание комнат");
             </div>
         </div>
     </form>
-
+    <div  class="form-horizontal form-box" >
+        <h4 class="form-box-header">Список Аудиторий</h4>
+        <div class="form-box-content" id="room-list">
+        </div>
+    </div>
 <script>
+
+    // Делаем аякс запрос
+    BX.ready(function() {
+        ajaxRequest();
+    });
+
+    function ajaxRequest() {
+    BX.ajax({
+        url: '/api.php',
+        data: {
+            sessid: BX.bitrix_sessid(),
+            type: 'getRoom'
+        },
+        method: 'POST',
+        dataType: 'json',
+        timeout: 30,
+        async: true,
+        processData: true,
+        scriptsRunFirst: true,
+        emulateOnload: true,
+        start: true,
+        cache: false,
+        onsuccess: function (data) {
+            console.log(data)
+
+            data.map(function (row) {
+                newContent = ' <div class="form-group">\n' +
+                    '                <div class="col-md-3">\n' +
+                    '                <label class="control-label" for="example-input-small"><strong>Имя Аудитории:</strong></label>\n' +
+                    '                    <label class="control-label " for="example-input-small">'+row["NAME"]+'</label>\n' +
+                    '                </div>\n' +
+                    '                <div class="col-md-6">\n' +
+                    '                    <label class="control-label " for="example-input-small"><strong>Цвет:</strong></label>\n' +
+                    '                    <label class="control-label " style="background:'+row["PROPERTY_COLOR_VALUE"]+'" for="example-input-small">'+row["PROPERTY_COLOR_VALUE"]+'</label>\n' +
+                    '                </div>\n' +
+                    '\n' +
+                    '                <div class="col-md-3">\n' +
+                    '                    <input type="button" class="btn btn-danger" id="'+row["ID"]+'" onclick="deleteRoom(this.id)" value="Удалить">\n' +
+                    '                </div>\n' +
+                    '                </div> '
+                $("#room-list").append(newContent);
+            });
+        },
+        onfailure: function () {
+            console.log("error");
+
+        }
+    });
+    }
+
     function createRoom() {
         if($("#room-name").val() && $("#room-color").val()){
             console.log('ok');
@@ -75,5 +129,38 @@ $APPLICATION->SetTitle("Создание комнат");
         }
     }
 
+
+    function deleteRoom(id) {
+        console.log(id)
+        BX.ajax({
+            url: '/api.php',
+            data: {
+                sessid: BX.bitrix_sessid(),
+                type: 'deleteRoom',
+                idRoom: id,
+            },
+            method: 'POST',
+            dataType: 'json',
+            timeout: 30,
+            async: true,
+            processData: true,
+            scriptsRunFirst: true,
+            emulateOnload: true,
+            start: true,
+            cache: false,
+            onsuccess: function (data) {
+                console.log(data)
+                if(data=='Success'){
+                    window.location.reload();
+                }
+
+            },
+            onfailure: function () {
+                console.log("error");
+
+            }
+        });
+
+    }
 </script>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

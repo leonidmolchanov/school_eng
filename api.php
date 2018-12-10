@@ -29,6 +29,10 @@ elseif($_REQUEST['type']=='editLesson'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/edit-lesson.php");
 elseif($_REQUEST['type']=='createRoom'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-room.php");
+elseif($_REQUEST['type']=='getRoom'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-room.php");
+elseif($_REQUEST['type']=='deleteRoom'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/delete-room.php");
 else:
     echo "err Type";
 endif;
