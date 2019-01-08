@@ -74,7 +74,7 @@ $APPLICATION->SetTitle("Создание комнат");
                     '                </div>\n' +
                     '\n' +
                     '                <div class="col-md-3">\n' +
-                    '                    <input type="button" class="btn btn-danger" id="'+row["ID"]+'" onclick="deleteRoom(this.id)" value="Удалить">\n' +
+                    '                    <input type="button" class="btn btn-danger" id="'+row["ID"]+'" onclick="confrimDelete(this.id)" value="Удалить">\n' +
                     '                </div>\n' +
                     '                </div> '
                 $("#room-list").append(newContent);
@@ -129,6 +129,23 @@ $APPLICATION->SetTitle("Создание комнат");
         }
     }
 
+    function confrimDelete(id) {
+        Swal({
+            title: 'Вы уверены?',
+            text: "Вы точно хотите удалить Аудиторию?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Удалить'
+        }).then((result) => {
+            if (result.value) {
+                deleteRoom(id)
+
+            }
+        })
+
+    }
 
     function deleteRoom(id) {
         console.log(id)
@@ -151,6 +168,11 @@ $APPLICATION->SetTitle("Создание комнат");
             onsuccess: function (data) {
                 console.log(data)
                 if(data=='Success'){
+                    Swal(
+                        'Удалено!',
+                        'Аудитория была удалена',
+                        'success'
+                    )
                     window.location.reload();
                 }
 

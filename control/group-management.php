@@ -48,9 +48,26 @@ $APPLICATION->SetTitle("Управление группами");
     // Делаем аякс запрос
     BX.ready(function() {
         ajaxRequest();
+
     });
 
+function confrimDelete(id) {
+    Swal({
+        title: 'Вы уверены?',
+        text: "Вы точно хотите удалить группу?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Удалить'
+    }).then((result) => {
+        if (result.value) {
+            deleteGroup(id)
 
+        }
+    })
+
+}
     function ajaxRequest() {
 
         BX.ajax({
@@ -93,7 +110,7 @@ $APPLICATION->SetTitle("Управление группами");
                         '                </div>\n' +
                         '\n' +
                         '                <div class="col-md-3">\n' +
-                        '                    <input type="button" class="btn btn-danger" id="'+row["ID"]+'" onclick="deleteGroup(this.id)" value="Удалить">\n' +
+                        '                    <input type="button" class="btn btn-danger" id="'+row["ID"]+'" onclick="confrimDelete(this.id)" value="Удалить">\n' +
                         '                </div>\n' +
                         '                </div> '
                     $("#groupList").append(newContent);
@@ -170,6 +187,11 @@ else{
             onsuccess: function (data) {
 console.log(data)
                 if(data=='Success'){
+                    Swal(
+                        'Удалено!',
+                        'Группа была удалена',
+                        'success'
+                    )
                     window.location.reload();
                 }
 
@@ -181,6 +203,9 @@ console.log(data)
         });
 
     }
+
+
+
 </script>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

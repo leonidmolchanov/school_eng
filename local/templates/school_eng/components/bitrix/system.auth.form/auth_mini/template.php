@@ -14,7 +14,11 @@ global $USER;
     $arFile = $rsFile->Fetch();
     $renderImage = CFile::ResizeImageGet($arUser['PERSONAL_PHOTO'], Array());
     ?>
-    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><img src="<?=$renderImage['src']?>" width="35" height="35" alt="avatar"> <b class="caret"></b></a>
+    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+        <?if($renderImage['src']):?>
+        <img src="<?=$renderImage['src']?>" width="35" height="35" alt="avatar">
+        <?endif;?>
+        <b class="caret"></b></a>
     <ul class="dropdown-menu">
         <!-- Just a button demostrating how loading of widgets could happen, check main.js- - uiDemo() -->
         <li class="divider"></li>

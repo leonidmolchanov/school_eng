@@ -6,8 +6,8 @@
  * Date: 10/12/2018
  * Time: 16:47
  */
-if(CIBlock::GetPermission($_REQUEST["idRoom"])>='W')
-{
+//if(CIBlock::GetPermission($_REQUEST["idRoom"])>='W')
+//{
     $DB->StartTransaction();
     if(!CIBlockElement::Delete($_REQUEST["idRoom"]))
     {
@@ -18,6 +18,6 @@ if(CIBlock::GetPermission($_REQUEST["idRoom"])>='W')
     else
         $DB->Commit();
     $request='Success';
-}
+//}
 echo json_encode($request);
 ?>

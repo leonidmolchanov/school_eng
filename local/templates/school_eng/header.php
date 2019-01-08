@@ -37,6 +37,8 @@ global $USER;
         <!-- Load a specific file here from css/themes/ folder to alter the default theme of the template -->
         <!-- The themes stylesheet of this template (for using specific theme color in individual elements - must included last) -->
         <?Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/css/themes.css");?>
+        <?Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/css/sweetalert2.css");?>
+
         <!-- END Stylesheets -->
 
         <!-- Modernizr (browser feature detection library) & Respond.js (Enable responsive CSS code on browsers that don't support it, eg IE8) -->
@@ -68,7 +70,7 @@ global $USER;
                 <!-- END Mobile Navigation -->
 
                 <!-- Logo -->
-                <a href="index.html" class="navbar-brand"><img src="<?=SITE_TEMPLATE_PATH?>/img/template/logo.png" alt="logo"></a>
+                <a href="/" class="navbar-brand"><img src="<?=SITE_TEMPLATE_PATH?>/img/template/logo.png" alt="logo"></a>
 
                 <!-- Loading Indicator, Used for demostrating how loading of widgets could happen, check main.js - uiDemo() -->
                 <div id="loading" class="pull-left"><i class="fa fa-certificate fa-spin"></i></div>
@@ -104,24 +106,24 @@ global $USER;
 <?if ($USER->IsAuthorized()):?>
                     <!-- Primary Navigation -->
                     <?$APPLICATION->IncludeComponent(
-                        "bitrix:menu",
-                        "vertical_menu",
-                        array(
-                            "ALLOW_MULTI_SELECT" => "N",
-                            "CHILD_MENU_TYPE" => "left",
-                            "DELAY" => "N",
-                            "MAX_LEVEL" => "1",
-                            "MENU_CACHE_GET_VARS" => array(
-                            ),
-                            "MENU_CACHE_TIME" => "3600",
-                            "MENU_CACHE_TYPE" => "N",
-                            "MENU_CACHE_USE_GROUPS" => "Y",
-                            "ROOT_MENU_TYPE" => "top",
-                            "USE_EXT" => "N",
-                            "COMPONENT_TEMPLATE" => "vertical_menu"
-                        ),
-                        false
-                    );?>
+	"bitrix:menu", 
+	"vertical_menu", 
+	array(
+		"ALLOW_MULTI_SELECT" => "N",
+		"CHILD_MENU_TYPE" => "left",
+		"DELAY" => "N",
+		"MAX_LEVEL" => "2",
+		"MENU_CACHE_GET_VARS" => array(
+		),
+		"MENU_CACHE_TIME" => "3600",
+		"MENU_CACHE_TYPE" => "N",
+		"MENU_CACHE_USE_GROUPS" => "Y",
+		"ROOT_MENU_TYPE" => "top",
+		"USE_EXT" => "Y",
+		"COMPONENT_TEMPLATE" => "vertical_menu"
+	),
+	false
+);?>
      <!-- END Primary Navigation -->
 <?else:?>
 <script>window.location.replace('/login.php');</script>

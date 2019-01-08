@@ -35,7 +35,7 @@ use Bitrix\Main\Page\Asset;
 <!-- Excanvas for canvas support on IE8 -->
 <script src="<?=SITE_TEMPLATE_PATH?>/js/helpers/excanvas.min.js"></script><![endif]-->
 <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file (Remove 'http:' if you have SSL) -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="<?=SITE_TEMPLATE_PATH?>/js/jquery.min.js"></script>
 <script>!window.jQuery && document.write(decodeURI('%3Cscript src="<?=SITE_TEMPLATE_PATH?>/js/vendor/jquery-1.11.1.min.js"%3E%3C/script%3E'));</script>
 
 <!-- Bootstrap.js -->
@@ -44,6 +44,8 @@ use Bitrix\Main\Page\Asset;
 <!-- Jquery plugins and custom javascript code -->
 <script src="<?=SITE_TEMPLATE_PATH?>/js/plugins.js"></script>
 <script src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
+<script src="<?=SITE_TEMPLATE_PATH?>/js/sweetalert2.all.min.js"></script>
+<!--<script src="--><?//=SITE_TEMPLATE_PATH?><!--/js/moment-with-locales.min.js"></script>-->
 <!-- Javascript code only for this page -->
 </body>
 </html>

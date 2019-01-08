@@ -12,6 +12,41 @@ $APPLICATION->SetTitle("Расписание");
             ajaxRequest();
         });
 
+        function confrimDelete(id) {
+            Swal({
+                title: 'Вы уверены?',
+                text: "Вы точно хотите удалить занятие?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Удалить'
+            }).then((result) => {
+                if (result.value) {
+                    deleteLesson(id)
+
+                }
+            })
+
+        }
+        function confrimEdit() {
+            console.log('baf')
+            Swal({
+                title: 'Вы уверены?',
+                text: "Вы точно хотите изменить параметны занятия?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Изменить'
+            }).then((result) => {
+                if (result.value) {
+                    editLesson()()
+
+                }
+            })
+
+        }
 
         function ajaxRequest(navigate) {
             date = moment().add('days', navigate).format('YYYY-MM-DD');
@@ -42,6 +77,7 @@ $APPLICATION->SetTitle("Расписание");
                     start: true,
                     cache: false,
                     onsuccess: function (data) {
+                        $("#tblTest tbody").empty();
                         dataArr = data;
                         console.log(data)
                         data.auditorium.map(function (item) {
@@ -76,8 +112,8 @@ $APPLICATION->SetTitle("Расписание");
                        console.log('len' + len)
 
                        data.content[0].map(function (row) {
-                           newBodyContent = '<tr>'
-                           newBodyContent += ' <td class="hidden-xs hidden-sm text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                           newBodyContent = '<tr role="row" class="odd">'
+                           newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
                            i = 0;
                            row["CONTENT"].map(function (lessons) {
                                color = "ffffff";
@@ -87,12 +123,12 @@ $APPLICATION->SetTitle("Расписание");
                                    }
                                })
                                console.log(color)
-                               newBodyContent += ' <td class="hidden-xs hidden-sm text-center" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="deleteLesson(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                               newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                                i++
                            })
                            if (length - i !== 0) {
                                for (var x = 0; x < (length - i); x++)
-                                   newBodyContent += ' <td class="hidden-xs hidden-sm"></td>'
+                                   newBodyContent += ' <td class=""></td>'
                            }
                            newBodyContent += '</tr>';
                            $("#tblTest tbody").append(newBodyContent);
@@ -117,8 +153,8 @@ $APPLICATION->SetTitle("Расписание");
                        data.content.map(function (block) {
                            newBodyContentFor="";
                            block.map(function (row) {
-                               newBodyContent = '<tr>'
-                               newBodyContent += ' <td class="hidden-xs hidden-sm text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                               newBodyContent = '<tr role="row" class="odd">'
+                               newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
                                i = 0;
                                row["CONTENT"].map(function (lessons) {
                                    color = "ffffff";
@@ -128,12 +164,12 @@ $APPLICATION->SetTitle("Расписание");
                                        }
                                    })
                                    console.log(color)
-                                   newBodyContent += ' <td class="hidden-xs hidden-sm text-center" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="deleteLesson(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                   newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="deleteLesson(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                                    i++
                                })
                                if (length - i !== 0) {
                                    for (var x = 0; x < (length - i); x++)
-                                       newBodyContent += ' <td class="hidden-xs hidden-sm"></td>'
+                                       newBodyContent += ' <td class=""></td>'
                                }
                                newBodyContent += '</tr>';
                                newBodyContentFor+=newBodyContent;
@@ -312,7 +348,9 @@ console.log($("#edit-idLesson").val())
 
                 })
                 $("#editLessonName").val($(obj).attr('data-lesson-name'));
-                $("#edit-idLesson").val($(obj).attr('data-lesson-id'))
+                $("#edit-idLesson").val($(obj).attr('data-lesson-id'));
+                $("#editLessonTo").val($(obj).attr('data-lesson-time-to'));
+                $("#editLessonFrom").val($(obj).attr('data-lesson-time-from'));
                 document.getElementById('edit-modal').style.display='block';
             }
         }
@@ -476,7 +514,7 @@ function changeFilter(state) {
                 </form>
                 <div class="modal-footer">
                     <button class="btn btn-danger" onClick="editPopup('close')">Закрыть</button>
-                    <button class="btn btn-success" onclick="editLesson()">Изменить</button>
+                    <button class="btn btn-success" onclick="confrimEdit()">Изменить</button>
                 </div>
             </div>
         </div>
@@ -509,20 +547,10 @@ function changeFilter(state) {
         <div class="fc-center"><h2><span id="graphDate"></span></h2></div>
         <div class="fc-clear"></div>
     </div>
-<!--    <table class="table table-bordered" id="tblEntAttributes">-->
-<!--        <thead>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        </tbody>-->
-<!--    </table>-->
-    <div class="container">
-        <div class="row">
-    <div class="сol-12 col-sm-12 col-lg-12">
-    <table class="table table-bordered" id="tblTest">
+    <div id="example-datatables_wrapper" class="dataTables_wrapper form-inline no-footer">
+    <table class="table table-striped table-bordered dataTable no-footer" id="tblTest">
         <tbody>
         </tbody>
     </table>
-    </div>
-</div>
     </div>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

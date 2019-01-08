@@ -33,6 +33,24 @@ elseif($_REQUEST['type']=='getRoom'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-room.php");
 elseif($_REQUEST['type']=='deleteRoom'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/delete-room.php");
+elseif($_REQUEST['type']=='createStudent'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-student.php");
+elseif($_REQUEST['type']=='getStudent'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-student.php");
+elseif($_REQUEST['type']=='createTeacher'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-teacher.php");
+elseif($_REQUEST['type']=='createMethodist'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-methodist.php");
+elseif($_REQUEST['type']=='getGroupStructure'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-group-structure.php");
+elseif($_REQUEST['type']=='addInGroupStructure'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/add-in-group-structure.php");
+elseif($_REQUEST['type']=='deleteInGroupStructure'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/delete-in-group-structure.php");
+elseif($_REQUEST['type']=='getProfileInfo'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-profile-info.php");
+elseif($_REQUEST['type']=='createPayment'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/createPayment.php");
 else:
     echo "err Type";
 endif;

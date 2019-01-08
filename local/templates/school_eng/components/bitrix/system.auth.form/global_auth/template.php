@@ -126,7 +126,7 @@ elseif($arResult["FORM_TYPE"] == "otp"):
 <?
 else:
 ?>
-    <script>window.location.replace('/');</script>
+    <script>window.location.replace('/profile/');</script>
 <form action="<?=$arResult["AUTH_URL"]?>">
 	<table width="95%">
 		<tr>

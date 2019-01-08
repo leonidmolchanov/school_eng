@@ -42,6 +42,8 @@ body.login {
     background-color: #fff;
 }
 
+
+
 #login-btn-facebook,
 #login-btn-twitter {
     width: 130px;
@@ -2698,4 +2700,17 @@ only screen and (min-device-pixel-ratio: 1.5) {
     .loader-10 { background-image: url('../img/loading.gifs/loading10@2x.gif'); }
     .loader-11 { background-image: url('../img/loading.gifs/loading11@2x.gif'); }
     .loader-12 { background-image: url('../img/loading.gifs/loading12@2x.gif'); }
+}
+
+
+/* Custom */
+
+.custom-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 19px;
+    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 16px;
 }
