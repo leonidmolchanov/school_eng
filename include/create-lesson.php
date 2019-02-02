@@ -31,7 +31,13 @@ $PROP["AUDITORIUM"] = $_REQUEST["auditorium"];  // учитель для гру�
 $PROP["FROM"] = date("d.m.Y H:i", strtotime($_REQUEST["date"].$_REQUEST["from"]));  // учитель для группы
 $PROP["TO"] = date("d.m.Y H:i", strtotime($_REQUEST["date"].$_REQUEST["to"]));
 $PROP["GROUP"] = $_REQUEST["group"];  // учитель для группы
-
+$PROP["COST"] = $_REQUEST['cost'];
+if($_REQUEST['repeat']=='false'){
+    $PROP["REPEAT"]  = 0;
+}
+else{
+    $PROP["REPEAT"]  = 1;
+}
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

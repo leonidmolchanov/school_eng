@@ -4,12 +4,13 @@ $APPLICATION->SetTitle("Расписание");
 ?>
     <script>
         filter='day';
-        navigate=0;
+        navigate=<?if($_REQUEST['navigate']):?>Number(<?=$_REQUEST['navigate']?>)<?else:?>0<?endif;?>;
+        console.log(navigate)
         dataArr=[];
         // Делаем аякс запрос
         BX.ready(function() {
             moment().localeData('ru');
-            ajaxRequest();
+            ajaxRequest(navigate);
         });
 
         function confrimDelete(id) {
@@ -122,8 +123,14 @@ $APPLICATION->SetTitle("Расписание");
                                        color = value["PROPERTY_COLOR_VALUE"];
                                    }
                                })
-                               console.log(color)
-                               newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                               console.log(lessons["PROPERTY_REPEAT_VALUE"])
+                               if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
+                                   newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Редактировать" data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                               }
+                               else {
+                                   newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                               }
                                i++
                            })
                            if (length - i !== 0) {
@@ -164,7 +171,13 @@ $APPLICATION->SetTitle("Расписание");
                                        }
                                    })
                                    console.log(color)
-                                   newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="deleteLesson(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                   if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
+                                       newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                                   }
+                                   else {
+                                       newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                   }
                                    i++
                                })
                                if (length - i !== 0) {
@@ -195,8 +208,6 @@ z++;
         function createLesson() {
             if($("#createLessonName").val() && $("#createLessonFrom").val() && $("#createLessonTo").val() && $("#createLessonDate").val() && $("#groupSelect option:selected").attr('data-group-id') && $("#auditoriumSelect option:selected").attr('data-auditorium-id')){
 
-console.log('ok')
-
                 BX.ajax({
                     url: '/api.php',
                     data: {
@@ -207,7 +218,9 @@ console.log('ok')
                         to: $("#createLessonTo").val(),
                         date: $("#createLessonDate").val(),
                         group: $("#groupSelect option:selected").attr('data-group-id'),
-                        auditorium: $("#auditoriumSelect option:selected").attr('data-auditorium-id')
+                        auditorium: $("#auditoriumSelect option:selected").attr('data-auditorium-id'),
+                        repeat: $("#repeatLesson").prop("checked"),
+                        cost: $("#cost").val()
                     },
                     method: 'POST',
                     dataType: 'json',
@@ -222,7 +235,7 @@ console.log('ok')
 
                         console.log(data)
                         if(data=='Success'){
-                            window.location.reload();
+                            window.location.href += '?navigate='+navigate+'';
                         }
                     },
                     onfailure: function () {
@@ -260,7 +273,7 @@ console.log('ok')
                 onsuccess: function (data) {
 
                     if(data=='Success'){
-                        window.location.reload();
+                        window.location.href += '?navigate='+navigate+'';
                     }
 
                 },
@@ -287,7 +300,10 @@ console.log($("#edit-idLesson").val())
                         date: $("#editLessonDate").val(),
                         group: $("#editGroupSelect option:selected").attr('data-group-id'),
                         auditorium: $("#editAuditoriumSelect option:selected").attr('data-auditorium-id'),
-                        idLesson: $("#edit-idLesson").val()
+                        idLesson: $("#edit-idLesson").val(),
+                        repeat: $("#editRepeatLesson").prop("checked"),
+                        cost: $("#edit-cost").val()
+
                     },
                     method: 'POST',
                     dataType: 'json',
@@ -302,7 +318,7 @@ console.log($("#edit-idLesson").val())
 
                         console.log(data)
                         if (data == 'Success') {
-                            window.location.reload();
+                            window.location.href += '?navigate='+navigate+'';
                         }
                     },
                     onfailure: function () {
@@ -338,12 +354,23 @@ console.log($("#edit-idLesson").val())
                 $("#editAuditoriumSelect").empty();
                 $("#editGroupSelect").empty();
                 dataArr.auditorium.map(function (item) {
-                    newContent='<option data-auditorium-id="'+item["ID"]+'">'+item["NAME"]+'</option>'
+                    if($(obj).attr('data-auditorium-id')==item["ID"]) {
+                        newContent = '<option selected data-auditorium-id="' + item["ID"] + '">' + item["NAME"] + '</option>'
+                    }
+                    else{
+                        newContent = '<option data-auditorium-id="' + item["ID"] + '">' + item["NAME"] + '</option>'
+
+                    }
                     $("#editAuditoriumSelect").append(newContent);
 
                 })
                 dataArr.group.map(function (item) {
-                    newContent='<option data-group-id="'+item["ID"]+'">'+item["NAME"]+'</option>'
+                    if($(obj).attr('data-group-id')==item["ID"]) {
+                        newContent = '<option selected data-group-id="' + item["ID"] + '">' + item["NAME"] + '</option>'
+                    }
+                    else{
+                        newContent = '<option data-group-id="' + item["ID"] + '">' + item["NAME"] + '</option>'
+                    }
                     $("#editGroupSelect").append(newContent);
 
                 })
@@ -351,6 +378,13 @@ console.log($("#edit-idLesson").val())
                 $("#edit-idLesson").val($(obj).attr('data-lesson-id'));
                 $("#editLessonTo").val($(obj).attr('data-lesson-time-to'));
                 $("#editLessonFrom").val($(obj).attr('data-lesson-time-from'));
+                cost=$(obj).attr('data-lesson-cost')
+                repeat=$(obj).attr('data-lesson-repeat')
+                console.log(obj)
+                if(repeat!=='null'){
+                    $("#editRepeatLesson").prop('checked', true)
+                }
+                $("#edit-cost").val(Number(cost));
                 document.getElementById('edit-modal').style.display='block';
             }
         }
@@ -366,6 +400,129 @@ function changeFilter(state) {
             }
 
 }
+
+
+        function showSearchPopup(){
+            $('#search-modal').show()
+        }
+
+
+        function searchFreeTime() {
+            BX.ajax({
+                url: '/api.php',
+                data: {
+                    sessid: BX.bitrix_sessid(),
+                    type: 'searchFreeTime',
+                    dateFrom: $('#SearchDateFrom').val(),
+                    dateTo: $('#SearchDateTo').val(),
+                    timeFrom: $('#SearchTimeFrom').val(),
+                    timeTo: $('#SearchTimeTo').val(),
+                    interval: $("#timeInterval option:selected").val()
+
+                },
+                method: 'POST',
+                dataType: 'json',
+                timeout: 30,
+                async: true,
+                processData: true,
+                scriptsRunFirst: true,
+                emulateOnload: true,
+                start: true,
+                cache: false,
+                onsuccess: function (data) {
+                    console.log(data['AUDITORIUM'])
+                    $('#search-modal').hide()
+                    $('#free-time-result-modal').show()
+                    $('#free-time-result-list tbody').empty();
+                    data['FREETIME'].forEach(function (item) {
+                        content='<tr><td>'+item['FROM']+'</td><td>'+item['TO']+'</td><td>'+data["AUDITORIUM"][item["AUDITORIUM"]][0]['NAME']+'</td><td><a href="#example-modal" data-from ="'+item['FROM']+'" data-to ="'+item['TO']+'" onclick="addAfterSearch(this)" data-toggle="modal">Создать урок</a></td></tr>'
+                        $('#free-time-result-list tbody').append(content)
+                    })
+
+                },
+                onfailure: function () {
+                    console.log("error");
+
+                }
+            });
+        }
+function showStructure(elem) {
+    console.log(elem.dataset.lessonId)
+    BX.ajax({
+        url: '/api.php',
+        data: {
+            sessid: BX.bitrix_sessid(),
+            type: 'getLessonStructure',
+            id: elem.dataset.lessonId
+        },
+        method: 'POST',
+        dataType: 'json',
+        timeout: 30,
+        async: true,
+        processData: true,
+        scriptsRunFirst: true,
+        emulateOnload: true,
+        start: true,
+        cache: false,
+        onsuccess: function (data) {
+            console.log(data)
+            $('#structure-modal').show()
+            data['STUDENTS'].forEach(function (item) {
+                console.log(item)
+                adjustment=""
+;                if(item['PROPERTY_STATUS_VALUE']==0){
+                    status='Заблокирован'
+                }
+                else if(item['PROPERTY_STATUS_VALUE']==1){
+                    status='Активен'
+                }
+                else if(item['PROPERTY_STATUS_VALUE']==2){
+                    status='Болеет'
+                }
+                else{
+                    status='-'
+                }
+                if(item['ADJUSTMENT']){
+                    adjustment='(отработка)'
+                }
+                row = '<tr><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_DOGOVOR_VALUE']+'</a></td><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_LAST_NAME_VALUE']+' '+item['PROPERTY_NAME_VALUE']+'</a>' +adjustment+'</td><td>'+status+'</td></tr>'
+                $("#structure-lesson-list tbody").append(row);
+            })
+        },
+        onfailure: function () {
+            console.log("error");
+
+        }
+    });
+}
+        function hideStructurePopup() {
+            $('#structure-lesson-list tbody').empty()
+            $('#structure-modal').hide()
+
+        }
+        function hideSearchPopup() {
+            $('#search-modal').hide()
+
+        }
+        function hidefreeTimeResultPopup() {
+            $('#free-time-result-modal').hide()
+
+        }
+
+        function addAfterSearch(item) {
+            console.log(item.dataset.to)
+            from=item.dataset.from
+            to=item.dataset.to
+            from=from.split(" ")
+            to=to.split(" ")
+
+            $('#search-modal').hide()
+            $('#free-time-result-modal').hide()
+            $('#createLessonFrom').val(from[1])
+            $('#createLessonTo').val(to[1])
+            $('#createLessonDate').val(from[0])
+
+        }
     </script>
     <div id="example-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;"><div class="modal-backdrop  in" style="height: 833px;"></div>
         <!-- Modal Dialog -->
@@ -429,6 +586,22 @@ function changeFilter(state) {
                                 <div class="input-group bootstrap-timepicker">
                                     <select class="form-control input-sm" id="auditoriumSelect">
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-timepicker">Стоимость:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="number" id="cost" value ='1.00' min="1.00" max="10000.00" step="0.01" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-datepicker">Повторять занятие:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="checkbox" checked="true" id="repeatLesson">
                                 </div>
                             </div>
                         </div>
@@ -510,6 +683,22 @@ function changeFilter(state) {
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-timepicker">Стоимость:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="number"  id="edit-cost" value="1.00" min="1.00" max="10000.00" step="0.01" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-datepicker">Повторять занятие:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="checkbox"  id="editRepeatLesson">
+                                </div>
+                            </div>
+                        </div>
                 </div>
                 </form>
                 <div class="modal-footer">
@@ -520,6 +709,125 @@ function changeFilter(state) {
         </div>
         <!-- END Modal Content -->
     </div>
+
+
+    <div id="structure-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;"><div class="modal-backdrop  in" style="height: 833px;"></div>
+        <!-- Modal Dialog -->
+        <div class="modal-dialog">
+            <!-- Modal Content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="hideStructurePopup()" data-dismiss="modal">×</button>
+                    <h4>Состав группы</h4>
+                </div>
+                <div class="modal-body">
+<table id="structure-lesson-list" class="table table-striped table-bordered table-hover dataTable no-footer">
+    <thead>
+    <th>Номер договора</th><th>Имя</th><th>Статус</th></thead>
+    <tbody></tbody>
+</table>                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onClick="hideStructurePopup()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal Content -->
+    </div>
+
+    <div id="free-time-result-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;"><div class="modal-backdrop  in" style="height: 833px;"></div>
+        <!-- Modal Dialog -->
+        <div class="modal-dialog">
+            <!-- Modal Content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="hidefreeTimeResultPopup()" data-dismiss="modal">×</button>
+                    <h4>Результат поиска</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="free-time-result-list" class="table table-striped table-bordered table-hover dataTable no-footer">
+                        <thead>
+                        <th>С</th><th>До</th><th>Аудитория</th><th>Действие</th></thead>
+                        <tbody></tbody>
+                    </table>                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onClick="hidefreeTimeResultPopup()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal Content -->
+    </div>
+    <div id="search-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;"><div class="modal-backdrop  in" style="height: 833px;"></div>
+        <!-- Modal Dialog -->
+        <div class="modal-dialog">
+            <!-- Modal Content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="hideSearchPopup()" data-dismiss="modal">×</button>
+                    <h4>Поиск свободного времени</h4>
+                </div>
+                <div class="modal-body">
+
+                    <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">                         <!-- Timepicker for Bootstrap (classes are initialized in js/main.js -> uiInit()), for extra usage examples you can check out http://jdewit.github.io/bootstrap-timepicker/ -->
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6"  for="example-input-timepicker">С:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="date" id="SearchDateFrom" name="example-input-datepicker"
+                                           class="form-control"><input type="time" id="SearchTimeFrom" value="10:00" name="example-input-datepicker"
+                                                                       class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-timepicker">До:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="date" id="SearchDateTo" name="example-input-datepicker"
+                                           class="form-control"><input type="time" id="SearchTimeTo" value="21:00" name="example-input-datepicker"
+                                                                       class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.getElementById('SearchDateFrom').valueAsDate = new Date();
+                            document.getElementById('SearchDateTo').valueAsDate = new Date();
+
+                        </script>
+                        <!-- END Timepicker -->
+
+                        <!-- Datepicker for Bootstrap (classes are initialized in js/main.js -> uiInit()), for extra usage examples you can check out http://eternicode.github.io/bootstrap-datepicker -->
+
+
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-datepicker">Промежуток:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <select class="form-control input-sm" id="timeInterval">
+                                        <option value="30">30 Минут</option>
+                                        <option value="40">40 Минут</option>
+                                        <option value="50">50 Минут</option>
+                                        <option value="60" selected>60 Минут</option>
+                                        <option value="70">70 Минут</option>
+                                        <option value="80">80 Минут</option>
+                                        <option value="90">90 Минут</option>
+                                        <option value="100">100 Минут</option>
+                                        <option value="110">110 Минут</option>
+                                        <option value="120">120 Минут</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                                 </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onClick="hideSearchPopup()">Закрыть</button>
+                    <button class="btn btn-success" onclick="searchFreeTime()">Поиск</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal Content -->
+    </div>
+
 
 
     <!-- END Modal Dialog -->
@@ -535,7 +843,7 @@ function changeFilter(state) {
                 Сегодня
             </button>
             <a href="#example-modal" class="btn btn-default" data-toggle="modal">Создать занятие</a>
-
+            <a href="#example-modal" class="btn btn-primary" onclick="showSearchPopup()">Поиск</a>
         </div>
         <div class="fc-right">
             <div class="fc-button-group">

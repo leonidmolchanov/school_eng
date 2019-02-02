@@ -27,6 +27,8 @@ elseif($_REQUEST['type']=='deleteLesson'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/delete-lesson.php");
 elseif($_REQUEST['type']=='editLesson'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/edit-lesson.php");
+elseif($_REQUEST['type']=='getLessonStructure'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-lesson-structure.php");
 elseif($_REQUEST['type']=='createRoom'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-room.php");
 elseif($_REQUEST['type']=='getRoom'):
@@ -37,6 +39,8 @@ elseif($_REQUEST['type']=='createStudent'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-student.php");
 elseif($_REQUEST['type']=='getStudent'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-student.php");
+elseif($_REQUEST['type']=='editStudent'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-student.php");
 elseif($_REQUEST['type']=='createTeacher'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-teacher.php");
 elseif($_REQUEST['type']=='createMethodist'):
@@ -51,6 +55,18 @@ elseif($_REQUEST['type']=='getProfileInfo'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-profile-info.php");
 elseif($_REQUEST['type']=='createPayment'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/createPayment.php");
+elseif($_REQUEST['type']=='createAdjustment'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-adjustment.php");
+elseif($_REQUEST['type']=='editAdjustment'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-adjustment.php");
+elseif($_REQUEST['type']=='deleteAdjustment'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/delete-adjustment.php");
+elseif($_REQUEST['type']=='editJournal'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-journal.php");
+elseif($_REQUEST['type']=='searchFreeTime'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/search-free-time.php");
+elseif($_REQUEST['type']=='createDiscount'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-discount.php");
 else:
     echo "err Type";
 endif;

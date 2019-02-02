@@ -56,6 +56,13 @@ else if($privilege===4){?>
             <div class="list-group">
                 <a href="javascript:void(0)" class="list-group-item">Выход</a>
             </div>
+<!--            <div class="dash-tile dash-tile-leaf clearfix animation-pullDown">-->
+<!--                <div class="dash-tile-header">-->
+<!--                                    <span class="dash-tile-options">-->
+<!--                                    </span>-->
+<!--                    Скидки                   </div>-->
+<!--                -->
+<!--            </div>-->
         </div>
         <!-- END First Column | Image and menu -->
 
@@ -415,11 +422,47 @@ while ($arFields = $res->Fetch())
         </div>
         <!-- END Third Column | Right Sidebar -->
     </div>
+
     <!-- END Profile -->
 <?}
 else{?>
 Ваш статус не определен
 <?}?>
+
+<script>
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    function play( snd ) {
+        console.log(snd)
+        var audioCtx = new AudioContext();
+
+        var request = new XMLHttpRequest();
+        request.open( "GET", snd, true );
+        request.responseType = "arraybuffer";
+        request.onload = function () {
+            var audioData = request.response;
+
+            audioCtx.decodeAudioData(
+                audioData,
+                function ( buffer ) {
+                    var smp = audioCtx.createBufferSource();
+                    smp.buffer = buffer;
+                    smp.connect( audioCtx.destination );
+                    smp.start( 0 );
+                },
+                function ( e ) {
+                    alert( "Error with decoding audio data" + e.err );
+                }
+            );
+        };
+        request.send();
+    }
+    document.querySelector('button').addEventListener('click', function() {
+        context.resume().then(() => {
+            console.log('Playback resumed successfully');
+        });
+    });
+</script>
 <script>
 
 
@@ -531,6 +574,8 @@ function historyVisit() {
 
     BX.addCustomEvent("onPullEvent", BX.delegate(function(module_id,command,params){
         console.log(module_id, command, params);
+        url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/js/message.mp3';
+        play(url)
         Swal(
             command,
             params[0],

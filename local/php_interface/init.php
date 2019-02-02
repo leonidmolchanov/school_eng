@@ -16,4 +16,19 @@ function lessonDemon(){
 
 return "lessonDemon();";
 }
+function adjustmentDemon(){
+    require("create-adjustment.php");
+
+    return "adjustmentDemon();";
+}
+function costDemon(){
+    require("create-cost.php");
+
+    return "costDemon();";
+}
+require("pay-modify.php");
+
+function lessonProc($id, $val, $type){
+    require("lesson-proc.php");
+}
 ?>

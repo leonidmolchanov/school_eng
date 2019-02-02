@@ -17,7 +17,7 @@ function getLessons($date)
                 '<=PROPERTY_FROM' => $date . ' 23:59:59',),
             false,
             false,
-            Array('ID', 'NAME', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_GROUP', 'PROPERTY_AUDITORIUM')
+            Array('ID', 'NAME', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_GROUP', 'PROPERTY_AUDITORIUM', 'PROPERTY_REPEAT', 'PROPERTY_COST')
         );
 
         while ($ar_fields = $my_elements->GetNext()) {

@@ -23,6 +23,39 @@
     function createJournal($id, $lesson, $lessonName, $student)
     {
         $iblockid = 0;
+        $block=[];
+        $notbe=[];
+        $disease=[];
+
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'STUDENTS'),
+                false,
+                false,
+                Array('ID', 'PROPERTY_STATUS')
+            );
+
+            while($ar_fields = $my_elements->GetNext())
+            {
+                if (in_array($ar_fields['ID'], $student))
+                {
+                    if($ar_fields['PROPERTY_STATUS_VALUE']==2){
+                        array_push($disease, $ar_fields['ID']);
+                }
+                else if($ar_fields['PROPERTY_STATUS_VALUE']==1) {
+                    array_push($notbe, $ar_fields['ID']);
+                }
+                else{
+                    array_push($block, $ar_fields['ID']);
+
+                }
+                }
+
+            }
+        endif;
+
         if (CModule::IncludeModule("iblock")) {
 
             $ib_list = CIBlock::GetList(
@@ -43,7 +76,9 @@
         $PROP = array();
         $PROP["GROUPID"] = $id;
         $PROP["LESSONID"] = $lesson;
-        $PROP["NOTBE"] = $student;
+        $PROP["NOTBE"] = $notbe;
+        $PROP["BLOCK"] = $block;
+        $PROP["DISEASE"]  = $disease;
 
         $arLoadProductArray = Array(
             "MODIFIED_BY" => 1, // элемент изменен текущим пользователем
