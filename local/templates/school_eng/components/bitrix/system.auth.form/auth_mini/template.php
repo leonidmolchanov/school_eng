@@ -17,6 +17,8 @@ global $USER;
     <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
         <?if($renderImage['src']):?>
         <img src="<?=$renderImage['src']?>" width="35" height="35" alt="avatar">
+        <?else:?>
+            <img src="<?=SITE_TEMPLATE_PATH?>/img/noPhoto.png" width="35" height="35" alt="avatar">
         <?endif;?>
         <b class="caret"></b></a>
     <ul class="dropdown-menu">

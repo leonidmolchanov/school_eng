@@ -2,11 +2,10 @@
 /**
  * Created by PhpStorm.
  * User: leonidmolcanov
- * Date: 04/12/2018
- * Time: 00:04
+ * Date: 03/02/2019
+ * Time: 02:52
  */
-// Получаем список групп
-
+global $USER;
 $iblockid=0;
 if(CModule::IncludeModule("iblock"))
 {
@@ -28,20 +27,20 @@ $el = new CIBlockElement;
 
 $PROP = array();
 $PROP["TEACHER"] = $_REQUEST["teacherGroup"];  // учитель для группы
-$PROP["LESSON_COST"] = $_REQUEST["lessoncost"];  // учитель для группы
+$PROP["LESSON_COST"] = $_REQUEST["lessoncost"];
 $arLoadProductArray = Array(
-  "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
-  "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела
-  "IBLOCK_ID"      => $iblockid,
-  "PROPERTY_VALUES"=> $PROP,
-  "NAME"           => $_REQUEST["nameGroup"],
-  "ACTIVE"         => "Y"
-  );
+    "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
+    "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела
+    "IBLOCK_ID"      => $iblockid,
+    "PROPERTY_VALUES"=> $PROP,
+    "NAME"           => $_REQUEST['nameGroup'],
+    "ACTIVE"         => "Y"
+);
 
-if($PRODUCT_ID = $el->Add($arLoadProductArray))
+if($el->Update($_REQUEST['id'],$arLoadProductArray))
     $request = 'Success';
 else
-    $request = 'Error';
+    $request = 'Error'.$_REQUEST["name"];
 
 echo json_encode($request);
 ?>

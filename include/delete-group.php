@@ -7,6 +7,34 @@
  */
 //if(CIBlock::GetPermission($_REQUEST["idGroup"])>='W')
 //{
+
+if (CModule::IncludeModule("iblock")):
+    # show url my elements
+    $my_elements = CIBlockElement::GetList(
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE',
+            "PROPERTY_GROUP_ID" => $_REQUEST["idGroup"]),
+        false,
+        false,
+        Array('ID', 'PROPERTY_STUDENT_ID')
+    );
+
+    while ($ar_fields = $my_elements->GetNext()) {
+
+        $DB->StartTransaction();
+        if(!CIBlockElement::Delete($ar_fields["ID"]))
+        {
+            $request='error';
+            $strWarning .= 'Error!';
+            $DB->Rollback();
+        }
+        else
+            $DB->Commit();
+        $request='Success';
+
+    }
+endif;
+
     $DB->StartTransaction();
     if(!CIBlockElement::Delete($_REQUEST["idGroup"]))
     {

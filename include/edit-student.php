@@ -7,6 +7,25 @@
  */
 
 global $USER;
+
+
+$balance=0;
+if (CModule::IncludeModule("iblock")):
+    # show url my elements
+    $my_elements = CIBlockElement::GetList (
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'STUDENTS', 'ID'=>$_REQUEST['elementid']),
+        false,
+        false,
+        Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_LESSON_BALANCE')
+    );
+
+    while($ar_fields = $my_elements->GetNext())
+    {
+        $balance=$ar_fields['PROPERTY_LESSON_BALANCE_VALUE'];
+    }
+endif;
+
 $el = new CIBlockElement;
 
 $PROP = array();
@@ -27,7 +46,7 @@ $PROP["MOTHER_TEL"] = $_REQUEST['mothertel'];
 $PROP["COMMENTS"] = $_REQUEST['comments'];
 $PROP["STATUS"] = $_REQUEST['status'];
 $PROP["USERID"] = $_REQUEST['userid'];
-
+$PROP["LESSON_BALANCE"] = $balance;
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

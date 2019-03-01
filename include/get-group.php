@@ -8,6 +8,7 @@
 // Получаем список групп
 require($_SERVER["DOCUMENT_ROOT"]."/include/group.php");
 require($_SERVER["DOCUMENT_ROOT"]."/include/teacher.php");
-$request = Array('teacher'=>$teacher, 'group'=>$group);
+require($_SERVER["DOCUMENT_ROOT"]."/include/lesson-cost.php");
+$request = Array('teacher'=>$teacher, 'group'=>$group, 'lessoncost'=>$lessoncost);
 echo json_encode($request);
 ?>

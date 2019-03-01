@@ -2,23 +2,22 @@
 /**
  * Created by PhpStorm.
  * User: leonidmolcanov
- * Date: 03/12/2018
- * Time: 19:38
+ * Date: 03/02/2019
+ * Time: 01:31
  */
-$group=[];
+$lessoncost=[];
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
-        Array("NAME" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP'),
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'TICKETS'),
         false,
         false,
-        Array('ID', 'NAME','PROPERTY_TEACHER', 'PROPERTY_LESSON_COST')
+        Array()
     );
 
     while($ar_fields = $my_elements->GetNext())
     {
-        array_push($group, $ar_fields);
+        array_push($lessoncost, $ar_fields);
     }
 endif;
-    ?>

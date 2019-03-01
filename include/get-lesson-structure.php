@@ -58,7 +58,7 @@ if (CModule::IncludeModule("iblock")):
     {
         array_push($structure, $ar_fields['PROPERTY_STUDENT_ID_VALUE']);
     }
-
+if(!empty($structure)):
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
         Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure),
@@ -72,7 +72,7 @@ if (CModule::IncludeModule("iblock")):
 
         array_push($students, $ar_fields);
     }
-
+endif;
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
         Array("IBLOCK_CODE" => 'ADJUSTMENT', "PROPERTY_ALESSONID" => $_REQUEST['id']),

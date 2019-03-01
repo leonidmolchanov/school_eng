@@ -60,6 +60,15 @@ CModule::IncludeModule('Sale');
        $desc
 );
 if($d){
+    if($_REQUEST['transactionid']){
+        $ELEMENT_ID = $_REQUEST['transactionid'];  // код элемента
+        $PROPERTY_CODE = "STATUS";  // код свойства
+        $PROPERTY_CODE2 = "USERID";
+            $PROPERTY_VALUE = 1;  // значение свойства
+// Установим новое значение для данного свойства данного элемента
+        $test  = CIBlockElement::SetPropertyValuesEx($ELEMENT_ID, false, array($PROPERTY_CODE => $PROPERTY_VALUE));
+        $test  = CIBlockElement::SetPropertyValuesEx($ELEMENT_ID, false, array($PROPERTY_CODE2 => $_REQUEST['userid']));
+    }
     echo json_encode("success");
 }
 //}

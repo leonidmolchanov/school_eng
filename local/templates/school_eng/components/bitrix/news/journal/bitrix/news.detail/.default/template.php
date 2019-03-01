@@ -53,6 +53,7 @@ if (!empty($arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]))
     }
 }
 $userArrAdj=[];
+if($arResult["DISPLAY_PROPERTIES"]["LESSONID"]["DISPLAY_VALUE"]):
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
@@ -69,6 +70,7 @@ if (CModule::IncludeModule("iblock")):
 
     }
 endif;
+    endif;
 $students=[];
 if (CModule::IncludeModule("iblock") && !empty($userArr)):
     # show url my elements
@@ -110,9 +112,10 @@ endif;
 <table class="table table-borderless" id="journal-table">
     <thead>
     <tr>
-        <th>Был</th>
-        <th class="cell-small text-center">Болезнь</th>
         <th class="text-center">#</th>
+        <th>Не был</th>
+        <th>Был</th>
+        <th class="cell-small text-center">Болезнь/Пропустил</th>
         <th>№ договора</th>
         <th class="hidden-xs hidden-sm">Имя</th>
         <th class="hidden-xs hidden-sm">Фамилия</th>
@@ -136,7 +139,18 @@ endif;
                     ?>class="active"
                 <?endif;?>
         data-id="<?=$item['ID']?>">
-            <td class="cell-small text-center"><input type="checkbox"
+            <td class="text-center"><?=$i?></td>
+            <td class="cell-small text-center"><input name="selectradio<?=$item["ID"]?>" type="radio"
+                    <?
+                    if(is_array($arResult["DISPLAY_PROPERTIES"]["NOTBE"]["DISPLAY_VALUE"])):
+                        if(in_array($item["ID"],$arResult["DISPLAY_PROPERTIES"]["NOTBE"]["DISPLAY_VALUE"])):?> checked<?endif;
+                    else:
+                        if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["NOTBE"]["DISPLAY_VALUE"]):
+                            ?>checked
+                        <?endif;
+                    endif;?>
+                                                      onchange="setNotBe(this)"></td>
+            <td class="cell-small text-center"><input name="selectradio<?=$item["ID"]?>" type="radio"
                     <?
                     if(is_array($arResult["DISPLAY_PROPERTIES"]["BE"]["DISPLAY_VALUE"])):
                         if(in_array($item["ID"],$arResult["DISPLAY_PROPERTIES"]["BE"]["DISPLAY_VALUE"])):?> checked<?endif;
@@ -146,7 +160,7 @@ endif;
                         <?endif;
                     endif;?>
                                                       onchange="setFront(this)"></td>
-            <td class="cell-small text-center"><input type="checkbox"
+            <td class="cell-small text-center"><input name="selectradio<?=$item["ID"];?>" type="radio"
                     <?
                     if(is_array($arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"])):
                     if(in_array($item["ID"],$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"])):?> checked<?endif;
@@ -158,7 +172,6 @@ if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]):
 
 
                                                       onchange="setDisease(this)"></td>
-            <td class="text-center"><?=$i?></td>
             <td><a href="javascript:void(0)"><?=$item["PROPERTY_DOGOVOR_VALUE"]?></a></td>
             <td class="hidden-xs hidden-sm"><?=$item["PROPERTY_NAME_VALUE"]?></td>
             <td class="hidden-xs hidden-sm"><?=$item["PROPERTY_LAST_NAME_VALUE"]?></td>
@@ -169,7 +182,7 @@ if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]):
     ?>
     <?
 
-
+if($arResult["DISPLAY_PROPERTIES"]["LESSONID"]["DISPLAY_VALUE"]):
     if (CModule::IncludeModule("iblock")):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
@@ -192,11 +205,14 @@ if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]):
               <?if($ar_fields['PROPERTY_STATUS_VALUE']=='2'):?> class="warning"<?endif;?>
 
               data-id="<?=$item['ID']?>">
-            <td class="cell-small text-center"><input type="checkbox"
+              <td class="text-center"><?=$i?></td>
+              <td class="cell-small text-center"><input name="selectradio2<?=$item["ID"]?>" type="radio"
                    <?if($ar_fields['PROPERTY_STATUS_VALUE']=='1'):?> checked<?endif;?>
-                                                      onchange="setFront(this)"></td>
+                                                      onchange="setNotBe(this)"></td>
+              <td class="cell-small text-center"><input name="selectradio2<?=$item["ID"]?>" type="radio"
+                      <?if($ar_fields['PROPERTY_STATUS_VALUE']=='1'):?> checked<?endif;?>
+                                                        onchange="setFront(this)"></td>
             <td class="cell-small text-center">-</td>
-            <td class="text-center"><?=$i?></td>
             <td><a href="javascript:void(0)"><?=$studentsAdj[$ar_fields['PROPERTY_USERID_VALUE']]["PROPERTY_DOGOVOR_VALUE"]?></a>(Отработка)</td>
             <td class="hidden-xs hidden-sm"><?=$studentsAdj[$ar_fields['PROPERTY_USERID_VALUE']]["PROPERTY_NAME_VALUE"]?></td>
             <td class="hidden-xs hidden-sm"><?=$studentsAdj[$ar_fields['PROPERTY_USERID_VALUE']]["PROPERTY_LAST_NAME_VALUE"]?></td>
@@ -206,7 +222,7 @@ if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]):
 
         }
     endif;
-
+endif;
     ?>
     </tbody>
 </table>
@@ -215,11 +231,8 @@ if($item["ID"]==$arResult["DISPLAY_PROPERTIES"]["DISEASE"]["DISPLAY_VALUE"]):
 
 
 <?
-ECHO $arResult["DISPLAY_PROPERTIES"]["LESSONID"]["DISPLAY_VALUE"];
 $adjustment=[];
 
-
-    print_r($adjustment);
 
     ?>
 
@@ -258,13 +271,15 @@ $adjustment=[];
                obj.adj.push(elem)
            }
         })
-console.log(obj.adj)
+console.log(obj)
         BX.ajax({
             url: '/api.php',
             data: {
                 sessid: BX.bitrix_sessid(),
                 type: 'editJournal',
                 id: <?=$arResult["ID"]?>,
+                lessonid: <?=$arResult["DISPLAY_PROPERTIES"]["LESSONID"]["DISPLAY_VALUE"]?>,
+                groupid: <?=$arResult["DISPLAY_PROPERTIES"]["GROUPID"]["DISPLAY_VALUE"]?>,
                 be: JSON.stringify(obj.be),
                 notbe: JSON.stringify(obj.notbe),
                 disease: JSON.stringify(obj.disease),
@@ -282,10 +297,27 @@ console.log(obj.adj)
             onsuccess: function (data) {
                 console.log(data)
                 if(data=="Success"){
-                    // window.location.reload()
+                    Swal(
+                        'Готово!',
+                        'Журнал был отредактирован',
+                        'success'
+                    )
+window.location = 'https://erperp.ru/journal.php'
+                }
+                    else{
+                    Swal(
+                        'Ошибка!',
+                        data,
+                        'warning'
+                    )
                 }
             }
         })
+    }
+    function setNotBe(check) {
+        if(check.checked){
+            check.parentNode.parentNode.className="active";
+        }
     }
     function setFront(check) {
         if(check.checked){

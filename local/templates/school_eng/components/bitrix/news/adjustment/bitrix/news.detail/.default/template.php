@@ -26,7 +26,7 @@ $this->setFrameMode(true);
 
     function ajaxRequest(navigate) {
         date = moment().add('days', navigate).format('YYYY-MM-DD');
-        $("#graphDate").html(moment().add('days', navigate).format("dddd  Do MM YYYY"))
+        $("#graphDate").html(moment().add('days', navigate).format("dddd  Do.MM.YYYY"))
         $("#createLessonDate").val(moment().add('days', navigate).format("YYYY-MM-DD"))
         $("#editLessonDate").val(moment().add('days', navigate).format("YYYY-MM-DD"))
         console.log(date)
@@ -100,11 +100,11 @@ $this->setFrameMode(true);
                             })
                             console.log(color)
                             if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
 
                             }
                             else {
-                                newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                             }
                             i++
                         })
@@ -146,11 +146,11 @@ $this->setFrameMode(true);
                                     }
                                 })
                                 if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                    newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                    newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
 
                                 }
                                 else {
-                                    newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                    newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                                 }
                                 i++
                             })
@@ -208,9 +208,14 @@ $this->setFrameMode(true);
     function changeFilter(state) {
         if(state=='day'){
             filter='day';
+            document.getElementById('filterButtonDay').className+='fc-corner-right fc-state-active';
+            document.getElementById('filterButtonWeek').classList.remove('fc-state-active')
+
             ajaxRequest(navigate)
         }
         else if(state=='week'){
+            document.getElementById('filterButtonWeek').className+='fc-corner-right fc-state-active';
+            document.getElementById('filterButtonDay').classList.remove('fc-state-active')
             filter='week';
             ajaxRequest(navigate)
 
@@ -317,8 +322,8 @@ $this->setFrameMode(true);
     </div>
     <div class="fc-right">
         <div class="fc-button-group">
-            <button type="button" class="fc-agendaWeek-button fc-button fc-state-default" onClick="changeFilter('week')">Неделя</button>
-            <button type="button" class="fc-agendaDay-button fc-button fc-state-default fc-corner-right fc-state-active" onClick="changeFilter('day')">День
+            <button type="button" id="filterButtonWeek" class="fc-agendaWeek-button fc-button fc-state-default" onClick="changeFilter('week')">Неделя</button>
+            <button type="button" id="filterButtonDay" class="fc-agendaDay-button fc-button fc-state-default fc-corner-right fc-state-active" onClick="changeFilter('day')">День</button>
             </button>
         </div>
     </div>

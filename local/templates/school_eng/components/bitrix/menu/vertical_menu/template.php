@@ -17,7 +17,7 @@ foreach($arResult as $arItem):?>
 	<?if ($arItem["IS_PARENT"]):?>
 
 		<?if ($arItem["DEPTH_LEVEL"] == 1):?>
-        <li <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><a href="#" <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><i class="fa <?if($arItem["PARAMS"]["label"]):?>fa-<?=$arItem["PARAMS"]["label"]?><?endif;?>"></i><?=$arItem["TEXT"]?></a>
+        <li <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><a href="#" <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><i class="gi <?if($arItem["PARAMS"]["label"]):?>gi-<?=$arItem["PARAMS"]["label"]?><?endif;?>"></i><?=$arItem["TEXT"]?></a>
 				<ul>
 		<?else:?>
 <!--			<li><a href="--><?//=$arItem["LINK"]?><!--" class="parent--><?//if ($arItem["SELECTED"]):?><!-- item-selected--><?//endif?><!--">--><?//=$arItem["TEXT"]?><!--</a>-->
@@ -29,7 +29,7 @@ foreach($arResult as $arItem):?>
 		<?if ($arItem["PERMISSION"] > "D"):?>
 
 			<?if ($arItem["DEPTH_LEVEL"] == 1):?>
-                <li <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><a href="<?=$arItem["LINK"]?>" <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><i class="fa <?if($arItem["PARAMS"]["label"]):?>fa-<?=$arItem["PARAMS"]["label"]?><?endif;?>"></i><?=$arItem["TEXT"]?></a></li>
+                <li <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><a href="<?=$arItem["LINK"]?>" <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><i class="gi <?if($arItem["PARAMS"]["label"]):?>gi-<?=$arItem["PARAMS"]["label"]?><?endif;?>"></i><?=$arItem["TEXT"]?></a></li>
 			<?else:?>
 				<li><a href="<?=$arItem["LINK"]?>" <?if($arItem["SELECTED"]):?>class="active"<?endif;?>><i class="fa <?if($arItem["PARAMS"]["label"]):?>fa-<?=$arItem["PARAMS"]["label"]?><?endif;?>"></i><?=$arItem["TEXT"]?></a></li>
 			<?endif?>

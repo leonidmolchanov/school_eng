@@ -93,10 +93,10 @@ endif;
         </tr>
         </thead>
         <tbody>
-        <? $number=0;?>
+        <? $number=1;?>
         <?foreach($arResult["ITEMS"] as $arItem):?>
 <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
-                <tr role="row" class="odd">
+                <tr role="row" class="odd" onclick="selectRow(this)">
                 <td class="text-center sorting_1">
                     <?=$number;?>
                 </td>
@@ -134,7 +134,7 @@ endif;
                     <?elseif($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']==3):?>
                         Ждет назначения
                     <?endif;?>
-                    <a href="#" alt="Удалить отработку" onclick="deleteAdjustment(<?=$arItem['ID']?>)" id="delRow30" class="btn btn-xs btn-danger delRow"><i class="fa fa-times"></i></a>
+                    <a href="#" alt="Удалить отработку" onclick="deleteAdjustment(<?=$arItem['ID']?>)" id="delRow30" style="display: none" class="btn btn-xs btn-danger delRow"><i class="fa fa-times"></i></a>
 
                 </td>
             </tr>
@@ -145,7 +145,26 @@ endif;
 
 </div>
 <script>
+
+    function selectRow(item) {
+        item.querySelector('.delRow')
+        $(item.querySelector('.delRow')).toggle()
+    }
     function deleteAdjustment(id){
+
+        Swal({
+            title: 'Вы уверены?',
+            text: "Вы точно хотите удалить отработку?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            cancelButtonText: 'Отмена',
+
+            confirmButtonText: 'Удалить'
+        }).then((result) => {
+
+
         BX.ajax({
             url: '/api.php',
             data: {
@@ -182,6 +201,8 @@ endif;
 
             }
         });
+
+        })
     }
     BX.ready(function() {
         $(function () {

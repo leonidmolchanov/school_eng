@@ -3,7 +3,24 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Расписание");
 ?>
     <script>
-        filter='day';
+
+        function post(URL, PARAMS) {
+            var temp=document.createElement("form");
+            temp.action=URL;
+            temp.method="POST";
+            temp.style.display="none";
+            for(var x in PARAMS) {
+                var opt=document.createElement("textarea");
+                opt.name=x;
+                opt.value=PARAMS[x];
+                temp.appendChild(opt);
+            }
+            document.body.appendChild(temp);
+            temp.submit();
+            return temp;
+        }
+
+        filter=<?if($_REQUEST['filter']):?>'<?=$_REQUEST['filter']?>'<?else:?>'day'<?endif;?>;
         navigate=<?if($_REQUEST['navigate']):?>Number(<?=$_REQUEST['navigate']?>)<?else:?>0<?endif;?>;
         console.log(navigate)
         dataArr=[];
@@ -51,7 +68,7 @@ $APPLICATION->SetTitle("Расписание");
 
         function ajaxRequest(navigate) {
             date = moment().add('days', navigate).format('YYYY-MM-DD');
-            $("#graphDate").html(moment().add('days', navigate).format("dddd  Do MM YYYY"))
+            $("#graphDate").html(moment().add('days', navigate).format("dddd  Do.MM.YYYY"))
             $("#createLessonDate").val(moment().add('days', navigate).format("YYYY-MM-DD"))
             $("#editLessonDate").val(moment().add('days', navigate).format("YYYY-MM-DD"))
             console.log(date)
@@ -79,8 +96,14 @@ $APPLICATION->SetTitle("Расписание");
                     cache: false,
                     onsuccess: function (data) {
                         $("#tblTest tbody").empty();
+                        $("#searchTeacher").empty();
                         dataArr = data;
                         console.log(data)
+                        data.teacher.map(function (item) {
+                                newContent = '<option data-id="' + item["ID"] + '">' + item["NAME"] +'</option>'
+                                $("#searchTeacher").append(newContent);
+
+                        });
                         data.auditorium.map(function (item) {
                             newContent = '<option data-auditorium-id="' + item["ID"] + '">' + item["NAME"] + '</option>'
                             $("#auditoriumSelect").append(newContent);
@@ -125,11 +148,11 @@ $APPLICATION->SetTitle("Расписание");
                                })
                                console.log(lessons["PROPERTY_REPEAT_VALUE"])
                                if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                   newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Редактировать" data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                   newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать" data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
 
                                }
                                else {
-                                   newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                   newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                                }
                                i++
                            })
@@ -172,11 +195,11 @@ $APPLICATION->SetTitle("Расписание");
                                    })
                                    console.log(color)
                                    if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                       newBodyContent += ' <td class="text-center table-hover" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                       newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
 
                                    }
                                    else {
-                                       newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + ');" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                       newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
                                    }
                                    i++
                                })
@@ -235,7 +258,12 @@ z++;
 
                         console.log(data)
                         if(data=='Success'){
-                            window.location.href += '?navigate='+navigate+'';
+                            // window.location.href += '?navigate='+navigate+'';
+
+                            post(window.location.href, {
+                                navigate:navigate,
+                                filter:filter
+                            })
                         }
                     },
                     onfailure: function () {
@@ -273,7 +301,11 @@ z++;
                 onsuccess: function (data) {
 
                     if(data=='Success'){
-                        window.location.href += '?navigate='+navigate+'';
+                        // window.location.href += '?navigate='+navigate+'';
+                        post(window.location.href, {
+                            navigate:navigate,
+                            filter:filter
+                        })
                     }
 
                 },
@@ -318,7 +350,11 @@ console.log($("#edit-idLesson").val())
 
                         console.log(data)
                         if (data == 'Success') {
-                            window.location.href += '?navigate='+navigate+'';
+                            // window.location.href += '?navigate='+navigate+'';
+                            post(window.location.href, {
+                                navigate:navigate,
+                                filter:filter
+                            })
                         }
                     },
                     onfailure: function () {
@@ -391,9 +427,14 @@ console.log($("#edit-idLesson").val())
 function changeFilter(state) {
             if(state=='day'){
                 filter='day';
+                document.getElementById('filterButtonDay').className+='fc-corner-right fc-state-active';
+                document.getElementById('filterButtonWeek').classList.remove('fc-state-active')
+
                 ajaxRequest(navigate)
             }
     else if(state=='week'){
+                document.getElementById('filterButtonWeek').className+='fc-corner-right fc-state-active';
+                document.getElementById('filterButtonDay').classList.remove('fc-state-active')
         filter='week';
                 ajaxRequest(navigate)
 
@@ -408,6 +449,7 @@ function changeFilter(state) {
 
 
         function searchFreeTime() {
+            console.log($("#searchTeacher option:selected").attr('data-id'))
             BX.ajax({
                 url: '/api.php',
                 data: {
@@ -417,7 +459,9 @@ function changeFilter(state) {
                     dateTo: $('#SearchDateTo').val(),
                     timeFrom: $('#SearchTimeFrom').val(),
                     timeTo: $('#SearchTimeTo').val(),
-                    interval: $("#timeInterval option:selected").val()
+                    interval: $("#timeInterval option:selected").val(),
+                    teacherId: $("#searchTeacher option:selected").attr('data-id')
+
 
                 },
                 method: 'POST',
@@ -467,6 +511,7 @@ function showStructure(elem) {
         onsuccess: function (data) {
             console.log(data)
             $('#structure-modal').show()
+            number=1
             data['STUDENTS'].forEach(function (item) {
                 console.log(item)
                 adjustment=""
@@ -485,8 +530,9 @@ function showStructure(elem) {
                 if(item['ADJUSTMENT']){
                     adjustment='(отработка)'
                 }
-                row = '<tr><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_DOGOVOR_VALUE']+'</a></td><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_LAST_NAME_VALUE']+' '+item['PROPERTY_NAME_VALUE']+'</a>' +adjustment+'</td><td>'+status+'</td></tr>'
+                row = '<tr><td>'+number+'</td><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_DOGOVOR_VALUE']+'</a></td><td><a href="student-card.php?ELEMENT_ID='+item['ID']+'">'+item['PROPERTY_LAST_NAME_VALUE']+' '+item['PROPERTY_NAME_VALUE']+'</a>' +adjustment+'</td><td>'+status+'</td></tr>'
                 $("#structure-lesson-list tbody").append(row);
+          number++
             })
         },
         onfailure: function () {
@@ -723,7 +769,7 @@ function showStructure(elem) {
                 <div class="modal-body">
 <table id="structure-lesson-list" class="table table-striped table-bordered table-hover dataTable no-footer">
     <thead>
-    <th>Номер договора</th><th>Имя</th><th>Статус</th></thead>
+    <th>№</th><th>Номер договора</th><th>Имя</th><th>Статус</th></thead>
     <tbody></tbody>
 </table>                </div>
                 <div class="modal-footer">
@@ -817,6 +863,16 @@ function showStructure(elem) {
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-datepicker">Учителя:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <select class="form-control input-sm" id="searchTeacher">
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                                  </div>
                 <div class="modal-footer">
@@ -847,9 +903,13 @@ function showStructure(elem) {
         </div>
         <div class="fc-right">
             <div class="fc-button-group">
-                <button type="button" class="fc-agendaWeek-button fc-button fc-state-default" onClick="changeFilter('week')">Неделя</button>
-                <button type="button" class="fc-agendaDay-button fc-button fc-state-default fc-corner-right fc-state-active" onClick="changeFilter('day')">День
-                </button>
+                <?if($_REQUEST['filter']=='week'):?>
+                <button type="button" id="filterButtonWeek" class="fc-agendaWeek-button fc-button fc-state-default fc-corner-right fc-state-active" onClick="changeFilter('week')">Неделя</button>
+                <button type="button" id="filterButtonDay" class="fc-agendaDay-button fc-button fc-state-default " onClick="changeFilter('day')">День</button>
+                <?else:?>
+                    <button type="button" id="filterButtonWeek" class="fc-agendaWeek-button fc-button fc-state-default" onClick="changeFilter('week')">Неделя</button>
+                    <button type="button" id="filterButtonDay" class="fc-agendaDay-button fc-button fc-state-default fc-corner-right fc-state-active" onClick="changeFilter('day')">День</button>
+                <?endif;?>
             </div>
         </div>
         <div class="fc-center"><h2><span id="graphDate"></span></h2></div>

@@ -34,7 +34,8 @@ endif;
 if(!empty(json_decode($_REQUEST['disease']))):
 $PROP["DISEASE"] = json_decode($_REQUEST['disease']);
 endif;
-
+$PROP["GROUPID"]  = json_decode($_REQUEST['groupid']);
+$PROP["LESSONID"] = json_decode($_REQUEST['lessonid']);
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела
@@ -46,7 +47,7 @@ $arLoadProductArray = Array(
 if($el->Update($_REQUEST['id'],$arLoadProductArray))
     $request = 'Success';
 else
-    $request = 'Error'.$_REQUEST["name"];
+    $request = 'Error';
 
 if($_REQUEST['adj']):
     $iblockid=0;

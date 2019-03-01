@@ -92,7 +92,7 @@ endif;
         </tr>
         </thead>
         <tbody>
-        <? $number=0;?>
+        <? $number=1;?>
         <?foreach($arResult["ITEMS"] as $arItem):?>
 <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
             <? if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']!=='0'):?>

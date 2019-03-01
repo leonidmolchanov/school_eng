@@ -206,14 +206,17 @@ function getGroupStructure(option) {
         onsuccess: function (data) {
             console.log(data)
             if(data!=='error') {
+                number=1
                 data.map(function (item) {
                     newBodyContent = '<tr role="row" class="odd"  ondragstart = "dragStart(event)" ondrag = "dragging(event)" ondragend = "dragEnd(event)" draggable = "true" id ="' + item["ID"] + '">\n' +
-                        '                        <td draggable = "false"><a draggable = "false" href="javascript:void(0)">' + item["PROPERTY_DOGOVOR_VALUE"] + '</a></td>\n' +
+                        '                        <td draggable = "false" align="center"><a draggable = "false" href="javascript:void(0)">' + number + '</a></td>\n' +
+                        '                        <td draggable = "false" align="center"><a draggable = "false" href="javascript:void(0)">' + item["PROPERTY_DOGOVOR_VALUE"] + '</a></td>\n' +
                         '                        <td draggable = "false" ><a draggable = "false" href="javascript:void(0)">' + item["PROPERTY_LAST_NAME_VALUE"] + ' ' + item["PROPERTY_NAME_VALUE"] + '</a></td>' +
                         '                        <td draggable = "false" align="right"><a href="javascript:void(0)" onclick="deleteInGroup(this.id)" id ="' + item["ID"] + '"  class="btn btn-outline-danger"><i class="gi gi-circle_arrow_right"></i></a></td>\n' +
                         '                    </tr>';
                     $("#group-table tbody").append(newBodyContent);
                     console.log(item)
+                    number++
                 })
             }
             else{
@@ -293,6 +296,10 @@ function getGroupStructure(option) {
                         <th class="text-center sorting_asc" tabindex="0" aria-controls="example-datatables3" rowspan="1"
                             colspan="1" aria-sort="ascending" aria-label="#: activate to sort column descending"
                             style="width: 90px;">№
+                        </th>
+                        <th class="text-center sorting_asc" tabindex="0" aria-controls="example-datatables3" rowspan="1"
+                            colspan="1" aria-sort="ascending" aria-label="#: activate to sort column descending"
+                            style="width: 90px;">Договор
                         </th>
                         <th class="sorting" tabindex="0" aria-controls="example-datatables2" rowspan="1" colspan="2"
                             aria-label=" Username: activate to sort column ascending" style="width: 296px;"><i

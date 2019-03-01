@@ -47,7 +47,6 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
             <a href="#" onclick="paymentShow()" class="list-group-item"><i class="fa fa-paperclip"></i> История оплат</a>
         </div>
 
-        <h5 class="page-header-sub">Скидки</h5>
         <?
         function GetGroup ()
         {
@@ -73,9 +72,182 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
         }
 
         ?>
+
+
+
+        <?
+        $userGroup=[];
+        $userLesson=[];
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'GROUP'),
+                false,
+                false,
+                Array('ID', 'NAME')
+            );
+
+            while($ar_fields = $my_elements->GetNext())
+            {
+                $userGroup[$ar_fields['ID']]=$ar_fields['NAME'];
+            }
+        endif;
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'LESSON'),
+                false,
+                false,
+                Array('ID', 'NAME')
+            );
+
+            while($ar_fields = $my_elements->GetNext())
+            {
+                $userLesson[$ar_fields['ID']]=$ar_fields['NAME'];
+            }
+        endif;
+        $userJournal=[];
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'JOURNAL'),
+                false,
+                false,
+                Array()
+            );
+
+            while($ar_fields = $my_elements->GetNextElement()) {
+                $fields = $ar_fields->GetFields();
+                $props = $ar_fields->GetProperties();
+                if (in_array($arResult['ID'], $props['NOTBE']['VALUE'])) {
+                    $arr=Array(
+                        'TYPE'=>0,
+                        'LESSON' => $fields['TIMESTAMP_X'],
+                        'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
+                    );
+                    array_push($userJournal, $arr);
+                }
+                if (in_array($arResult['ID'], $props['BE']['VALUE'])) {
+                    $arr=Array(
+                        'TYPE'=>1,
+                        'LESSON' => $fields['TIMESTAMP_X'],
+                        'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
+                    );
+                    array_push($userJournal, $arr);
+                }
+                if (in_array($arResult['ID'], $props['DISEASE']['VALUE'])) {
+                    $arr=Array(
+                        'TYPE'=>2,
+                        'LESSON' => $fields['TIMESTAMP_X'],
+                        'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
+                    );
+                    array_push($userJournal, $arr);
+                }
+            }
+        endif;
+        $adjustmentList = 0;
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'ADJUSTMENT'),
+                false,
+                false,
+                Array()
+            );
+
+            while($ar_fields = $my_elements->GetNextElement()) {
+                $fields = $ar_fields->GetFields();
+                $props = $ar_fields->GetProperties();
+                if ($arResult['ID']==$props['USERID']['VALUE']) {
+
+
+                    if (CModule::IncludeModule("iblock")):
+                        # show url my elements
+                        $my_elements = CIBlockElement::GetList (
+                            Array("ID" => "ASC"),
+                            Array("IBLOCK_CODE" => 'LESSON', "ID"=>$props['LESSONID']['VALUE']),
+                            false,
+                            false,
+                            Array('ID', 'NAME')
+                        );
+
+                        while($ar_fields = $my_elements->GetNext())
+                        {
+                            $userLessinName = $ar_fields['NAME'];
+                        }
+                    endif;
+
+
+
+
+                    $arr=Array(
+                        'TYPE'=>3,
+                        'LESSON' => $fields['TIMESTAMP_X'],
+                        'GROUP' => $userLessinName,
+                    );
+                    array_push($userJournal, $arr);
+                    $adjustmentList++;
+                }
+
+            }
+        endif;
+
+
+        function sort_date($a_new, $b_new) {
+
+            $a_new = strtotime($a_new["LESSON"]);
+            $b_new = strtotime($b_new["LESSON"]);
+
+            return $b_new - $a_new;
+
+        }
+
+        usort($userJournal, "sort_date");
+
+
+        $groupid=0;
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_STUDENT_ID" => $arResult['~ID']),
+                false,
+                false,
+                Array('ID', 'PROPERTY_GROUP_ID')
+            );
+
+            while($ar_fields = $my_elements->GetNext())
+            {
+                $groupid = $ar_fields['PROPERTY_GROUP_ID_VALUE'];
+            }
+        endif;
+
+        $costid=0;
+        if (CModule::IncludeModule("iblock")):
+            # show url my elements
+            $my_elements = CIBlockElement::GetList (
+                Array("ID" => "ASC"),
+                Array("IBLOCK_CODE" => 'GROUP', "ID" => $groupid),
+                false,
+                false,
+                Array('ID', 'PROPERTY_LESSON_COST')
+            );
+
+            while($ar_fields = $my_elements->GetNext())
+            {
+                $costid = $ar_fields['PROPERTY_LESSON_COST_VALUE'];
+            }
+        endif;
+        ?>
+        <h5 class="page-header-sub">Скидки</h5>
         <form id="form-validation"  method="post" class="form-horizontal form-box remove-margin" novalidate="novalidate">
             <!-- Form Content -->
             <div class="form-box-content">
+                <? $groupidList = [];?>
                 <?foreach (GetGroup() as $item):?>
 
                 <div class="form-group">
@@ -84,6 +256,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
                             <label for="example-checkbox1">
                                 <input class="discount_checkbox" type="checkbox"
                                        <?if(checkUser($arResult["DISPLAY_PROPERTIES"]['USERID']['DISPLAY_VALUE'],$item['ID'])):?>
+                                           <? array_push($groupidList, $item['ID']);?>
                                         checked
                                        <?endif;?>
                                        data-id="<?=$item['ID']?>" name="example-checkbox1" value="option1"> <?=$item['NAME']?>
@@ -102,6 +275,34 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
             </div>
             <!-- END Form Content -->
         </form>
+        <form id="form-validation"  method="post" class="form-horizontal form-box remove-margin" novalidate="novalidate">
+            <!-- Form Content -->
+            <div class="form-box-content">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="checkbox">
+                                <div class="input-group">
+                                    <input type="password" id="new-password"  placeholder="Введите новый пароль" class="form-control" autocomplete="off" >
+                                    <span  class="input-group-addon"><a  alt="Показать пароль" onclick="showPassword()" class="gi gi-search "></a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <input  onclick="changePassword(this.dataset.userid)" class="btn btn-success ui-wizard-content ui-formwizard-button" data-userid="<?=$arResult["DISPLAY_PROPERTIES"]['USERID']['VALUE']?>" id="changePasswordButton" value="Изменить">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Form Content -->
+        </form>
+        <script>
+            function showPassword() {
+                document.querySelector('#new-password').attributes["type"].value = "text";
+            }
+        </script>
     </div>
     <!-- END First Column | Image and menu -->
 
@@ -283,16 +484,56 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
          <?endif;?>
 
         </div>
-        <h5 class="page-header-sub"><i class="fa fa-bolt"></i> Баланс</h5>
-            <?if(round($ar["CURRENT_BUDGET"])>0):?>
+        <h5 class="page-header-sub">Цена абонимента</h5>
+        <? $dbPrice = CPrice::GetList(
+            array("QUANTITY_FROM" => "ASC", "QUANTITY_TO" => "ASC",
+                "SORT" => "ASC"),
+            array("PRODUCT_ID" => $costid),
+            false,
+            false,
+            array("ID", "CATALOG_GROUP_ID", "PRICE", "CURRENCY",
+                "QUANTITY_FROM", "QUANTITY_TO")
+        );
+        while ($arPrice = $dbPrice->Fetch())
+        {
+            $arDiscounts = CCatalogDiscount::GetDiscountByPrice(
+                $arPrice["ID"],
+                $groupidList,
+                "N",
+                SITE_ID
+            );
+            $discountPrice = CCatalogProduct::CountPriceWithDiscount(
+                $arPrice["PRICE"],
+                $arPrice["CURRENCY"],
+                $arDiscounts
+            );
+            $arPrice["DISCOUNT_PRICE"] = $discountPrice;
+        ?>
+        <span class="text-danger"><?
+            echo FormatCurrency($arPrice['PRICE'], $arPrice['CURRENCY']);
+             ?>цена за 8 занятий:
+                              <?echo FormatCurrency(($arPrice['PRICE'] *8), $arPrice['CURRENCY']);?></span><br>
+            <span class="text-success">Скидка:<br>
+        <?
+            echo FormatCurrency($arPrice['DISCOUNT_PRICE'], $arPrice['CURRENCY']);
+            ?> цена за 8 занятий: <?
+            echo FormatCurrency(($arPrice['PRICE'] *8), $arPrice['CURRENCY']);
+?></span><?
+        }
+        ?>
+        <h5 class="page-header-sub"><i class="fa fa-bolt"></i> Баланс уроков</h5>
+            <?if($arResult["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']>0):?>
         <div class="alert alert-success">
 <?else:?>
             <div class="alert alert-danger">
 <?endif;?>
-        <?=SaleFormatCurrency($ar["CURRENT_BUDGET"], $ar["CURRENCY"])?>
+        <?=$arResult["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']?>
         </div>
 
-
+            <h5 class="page-header-sub"><i class="fa fa-bolt"></i> Отработки</h5>
+            <div class="alert alert-warning">
+                    <?=$adjustmentList?>
+                </div>
 
             <div class="form-group">
                 <div class="col-md-3">
@@ -362,65 +603,6 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
     <!-- END Third Column | Right Sidebar -->
 
 
-<?
-$userGroup=[];
-$userLesson=[];
-if (CModule::IncludeModule("iblock")):
-    # show url my elements
-    $my_elements = CIBlockElement::GetList (
-        Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP'),
-        false,
-        false,
-        Array('ID', 'NAME')
-    );
-
-    while($ar_fields = $my_elements->GetNext())
-    {
-        $userGroup[$ar_fields['ID']]=$ar_fields['NAME'];
-    }
-endif;
-if (CModule::IncludeModule("iblock")):
-    # show url my elements
-    $my_elements = CIBlockElement::GetList (
-        Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'LESSON'),
-        false,
-        false,
-        Array('ID', 'NAME')
-    );
-
-    while($ar_fields = $my_elements->GetNext())
-    {
-        $userLesson[$ar_fields['ID']]=$ar_fields['NAME'];
-    }
-endif;
-$userJournal=[];
-if (CModule::IncludeModule("iblock")):
-    # show url my elements
-    $my_elements = CIBlockElement::GetList (
-        Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'JOURNAL'),
-        false,
-        false,
-        Array()
-    );
-
-    while($ar_fields = $my_elements->GetNextElement()) {
-        $fields = $ar_fields->GetFields();
-        $props = $ar_fields->GetProperties();
-        if (in_array($arResult['ID'], $props['NOTBE']['VALUE'])) {
-           $arr=Array(
-                   'TYPE'=>0,
-                    'LESSON' => $fields['TIMESTAMP_X'],
-               'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
-           );
-            array_push($userJournal, $arr);
-        }
-    }
-endif;
-    ?>
-
 
 
 
@@ -454,7 +636,7 @@ endif;
                         </tr>
                         </thead>
                         <tbody>
-                        <? $number=0;?>
+                        <? $number=1;?>
                         <?foreach($userJournal as $arItem):?>
                             <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
                             <tr role="row" class="odd">
@@ -472,10 +654,12 @@ endif;
                                 <td>
                                     <?if($arItem['TYPE']===0):?>
                                         Не был
-                                    <?elseif($arItem['TYPE']===1):?>:
+                                    <?elseif($arItem['TYPE']===1):?>
                                         Был
-                                    <?elseif($arItem['TYPE']===2):?>:
+                                    <?elseif($arItem['TYPE']===2):?>
                                         Болел
+                                    <?elseif($arItem['TYPE']===3):?>
+                                        Отработка
                                     <?endif;?>
                                 </td>
 
@@ -504,7 +688,7 @@ endif;
                         </tr>
                         </thead>
                         <tbody>
-                        <? $number=0;?>
+                        <? $number=1;?>
                         <?
                         $res = CSaleUserTransact::GetList(Array("ID" => "DESC"), array("USER_ID" => $arResult["DISPLAY_PROPERTIES"]['USERID']['VALUE']));
                         while ($arFields = $res->Fetch())
@@ -560,6 +744,71 @@ endif;
 </script>
 
 <script>
+    function changePassword(id) {
+        console.log(id)
+        console.log(document.querySelector('#new-password').value)
+
+        if(document.querySelector('#new-password').value){
+
+
+            BX.ajax({
+                url: '/api.php',
+                data: {
+                    sessid: BX.bitrix_sessid(),
+                    type: 'changePassword',
+                    id: id,
+                    password: document.querySelector('#new-password').value
+                },
+                method: 'POST',
+                dataType: 'json',
+                timeout: 30,
+                async: true,
+                processData: true,
+                scriptsRunFirst: true,
+                emulateOnload: true,
+                start: true,
+                cache: false,
+                onsuccess: function (data) {
+                    console.log(data)
+                    if(data=="success"){
+                        Swal({
+                            title: 'Готово!',
+                            text: "Пароль успешно изменен!",
+                            type: 'success',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Закрыть'
+                        })
+                    }
+                    else{
+                        Swal({
+                            title: 'Ошибка!',
+                            text: data,
+                            type: 'warning',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Закрыть'
+                        })
+                    }
+
+                },
+                onfailure: function () {
+                    console.log("error");
+
+                }
+            });
+        }
+        else{
+            Swal({
+                title: 'Ошибка!',
+                text: "Не задан пароль!",
+                type: 'warning',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Закрыть'
+            })
+        }
+    }
     function visitShow() {
         if($('#visit-modal').css('display')!=='none'){
             $("#visit-modal").hide()

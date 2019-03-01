@@ -35,32 +35,35 @@ if (CModule::IncludeModule("iblock")):
 
     }
 
-    if (CModule::IncludeModule("iblock")):
-        # show url my elements
-        $my_elements = CIBlockElement::GetList(
-            Array("PROPERTY_TO" => "ASC"),
-            Array("IBLOCK_CODE" => 'ADJUSTMENT',
-                '>=DATE_CREATE' => $date,
-                '<=DATE_CREATE' => $dateEND,),
-            false,
-            false,
-            Array('ID', 'NAME','PROPERTY_ALESSONID','PROPERTY_STATUS',)
-        );
+    // Модификация отработки fix 19.02.2018
+//    if (CModule::IncludeModule("iblock")):
+//        # show url my elements
+//        $my_elements = CIBlockElement::GetList(
+//            Array("PROPERTY_TO" => "ASC"),
+//            Array("IBLOCK_CODE" => 'ADJUSTMENT',
+//                '>=DATE_CREATE' => $date,
+//                '<=DATE_CREATE' => $dateEND,),
+//            false,
+//            false,
+//            Array('ID', 'NAME','PROPERTY_ALESSONID','PROPERTY_STATUS',)
+//        );
+//
+//        while ($ar_fields = $my_elements->GetNextElement()) {
+//            $prop = $ar_fields->GetFields();
+//            if($prop['PROPERTY_STATUS_VALUE']=='1') {
+//                array_push( $cost,Array('LESSONID'=>$prop['PROPERTY_ALESSONID_VALUE'],'USERID'=>$prop['PROPERTY_USERID_VALUE']));
+//                if (!in_array($prop['PROPERTY_LESSONID_VALUE'], $lessonArr)) {
+//                    array_push($lessonArr, $prop['PROPERTY_ALESSONID_VALUE']);
+//                }
+//            }
+//
+//
+//        }
+//
+//
+//    endif;
 
-        while ($ar_fields = $my_elements->GetNextElement()) {
-            $prop = $ar_fields->GetFields();
-            if($prop['PROPERTY_STATUS_VALUE']=='1') {
-                array_push( $cost,Array('LESSONID'=>$prop['PROPERTY_ALESSONID_VALUE'],'USERID'=>$prop['PROPERTY_USERID_VALUE']));
-                if (!in_array($prop['PROPERTY_LESSONID_VALUE'], $lessonArr)) {
-                    array_push($lessonArr, $prop['PROPERTY_ALESSONID_VALUE']);
-                }
-            }
 
-
-        }
-
-
-    endif;
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList(
@@ -86,6 +89,34 @@ if (CModule::IncludeModule("iblock")):
     }
 
 endif;
+
+    // Модификация отработки fix 19.02.2018
+
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList(
+            Array("PROPERTY_TO" => "ASC"),
+            Array("IBLOCK_CODE" => 'JOURNAL',
+                '>=DATE_CREATE' => $date,
+                '<=DATE_CREATE' => $dateEND,),
+            false,
+            false,
+            Array('ID', 'NAME','PROPERTY_LESSONID','PROPERTY_DISEASE')
+        );
+
+        while ($ar_fields = $my_elements->GetNextElement()) {
+            $prop = $ar_fields->GetFields();
+            if($prop['PROPERTY_DISEASE_VALUE']) {
+                array_push( $cost,Array('LESSONID'=>$prop['PROPERTY_LESSONID_VALUE'],'USERID'=>$prop['PROPERTY_DISEASE_VALUE']));
+                if (!in_array($prop['PROPERTY_LESSONID_VALUE'], $lessonArr)) {
+                    array_push($lessonArr, $prop['PROPERTY_LESSONID_VALUE']);
+                }
+            }
+
+
+        }
+
+    endif;
 $lesson=[];
 if (CModule::IncludeModule("iblock")):
     # show url my elements
@@ -136,9 +167,9 @@ if($lesson[$transaction['LESSONID']]['PROPERTY_COST_VALUE']){
 //        else{
 //            echo "error";
 //        }
-
-    lessonProc($transaction['USERID'],1,'remove');
 }
+    lessonProc($transaction['USERID'],1,'modify');
 
     }
-    ?>
+
+endif;

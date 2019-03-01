@@ -66,9 +66,13 @@ while($ar_fields = $my_elements->GetNext())
 endif;
 ?>
 
+<div class="checkbox">
+    <label for="example-checkbox1">
+        <input  type="checkbox" id="filter_checkbox"> Показать всех                            </label>
+</div>
 
 <div id="example-datatables_wrapper" class="">
-    <table id="example-datatables2" class="table table-striped table-bordered table-hover dataTable no-footer" role="grid" aria-describedby="example-datatables2_info">
+    <table id="user_table" class="table table-striped table-bordered table-hover dataTable no-footer" role="grid" aria-describedby="example-datatables2_info">
         <thead>
         <tr role="row">
             <th rowspan="1" colspan="1" class="text-center sorting_asc" tabindex="0" aria-controls="example-datatables2" aria-sort="ascending" aria-label="#: activate to sort column descending" style="width: 80px;">
@@ -87,12 +91,12 @@ endif;
                 Примечание
             </th>
             <th rowspan="1" colspan="1" class="sorting" tabindex="0" aria-controls="example-datatables2" aria-label=" Status: activate to sort column ascending" style="width: 347px;">
-                 Баланс
+                 Баланс занятий
             </th>
         </tr>
         </thead>
         <tbody>
-        <? $number=0;?>
+        <? $number=1;?>
         <? $studentCount=0;
         $studentLowBalance=0;
         $studentBlock=0;?>
@@ -100,8 +104,11 @@ endif;
             $studentCount++;
         if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']=='0'){
             $studentBlock++;
-        }?>
-        
+        }
+            if((int)$arItem["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']<0){
+                $studentLowBalance++;
+            }?>
+
 <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
             <tr role="row" class="odd
             <? if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']=='0'):?>
@@ -111,7 +118,8 @@ endif;
             <? elseif($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']=='2'):?>
             warning
             <?endif;?>
-            ">
+            "
+            >
                 <td class="text-center sorting_1">
                     <?=$number;?>
                 </td>
@@ -128,17 +136,13 @@ endif;
                     <span class="label label-default"><?=$arItem["DISPLAY_PROPERTIES"]['COMMENTS']['VALUE']?></span>
                 </td>
                 <td>
-                    <span class="label label-default">
-                        <?if($userBalance[$arItem["DISPLAY_PROPERTIES"]['USERID']['VALUE']]):?>
-                        <?=$userBalance[$arItem["DISPLAY_PROPERTIES"]['USERID']['VALUE']];
-                        if($userBalance[$arItem["DISPLAY_PROPERTIES"]['USERID']['VALUE']]<0){
-                            $studentLowBalance++;
-                        }
-                        ?>
+
+                        <?if($arItem["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']):?>
+                        <?=$arItem["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']; ?>
                         <?else:?>
-                       Счет не заведен!
+                       0
                         <?endif;?>
-                        </span>
+
                 </td>
             </tr>
         <?$number++;?>
@@ -155,7 +159,7 @@ endif;
     </div>
     <div class="col-sm-12 hidden-xs">
         <div>
-            <strong>Итого со статусом не достаточно средств: <?=$studentLowBalance?></strong>
+            <strong>Итого со статусом не купленных занятий: <?=$studentLowBalance?></strong>
         </div>
     </div>
     <div class="col-sm-12 hidden-xs">
@@ -168,94 +172,16 @@ endif;
     BX.ready(function() {
         $(function () {
             /* Initialize Datatables */
-            $('#example-datatables').dataTable({columnDefs: [{orderable: false, targets: [0]}]});
-            $('#example-datatables2').dataTable();
-            $('#example-datatables3').dataTable();
+            $('#user_table').dataTable({columnDefs: [{orderable: false, targets: [0]}]});
             $('.dataTables_filter input').attr('placeholder', 'Поиск');
         });
     });
+
+    document.querySelector('#filter_checkbox').addEventListener('click', function (evt) {
+       elem =  $('#user_table tbody tr')
+        console.log(elem)
+
+
+    })
 </script>
-<!---->
-<?//if($arParams["DISPLAY_BOTTOM_PAGER"]):?>
-<!--	--><?//=$arResult["NAV_STRING"]?>
-<?//endif;?>
-<!--        <div class="row">-->
-<!--            <div class="col-sm-4 hidden-xs">-->
-<!--                <div class="dataTables_info" id="example-datatables2_info" role="status" aria-live="polite">-->
-<!--                    <strong>Итого (без учета со статусом "занимается"):</strong>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-sm-4 hidden-xs">-->
-<!--                <div class="dataTables_info" id="example-datatables2_info" role="status" aria-live="polite">-->
-<!--                    <strong>Итого (всех студентов):</strong>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-sm-4 hidden-xs">-->
-<!--                <div class="dataTables_info" id="example-datatables2_info" role="status" aria-live="polite">-->
-<!--                    <strong>Итого (со статусом заморожен или закончился):</strong>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="col-md-6 push text-center">-->
-<!--        <table id="example-datatables" class="table table-striped table-bordered table-hover dataTable no-footer" role="grid" aria-describedby="example-datatables_info">-->
-<!--            <thead>-->
-<!--            <tr role="row">-->
-<!--                <th rowspan="1" colspan="2" class="sorting" tabindex="0" aria-controls="example-datatables" aria-label=" Status: activate to sort column ascending" style="width: 324px;">-->
-<!--                    Карточка студента-->
-<!--                </th>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Имя Фамилия студента</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    Илья Попов-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Возраст студента</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    8.08.2006 12 лет-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Номер договора</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    160-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Имя Фамилия родителя (Мама)</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    Попова Ирина-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Имя Фамилия родителя (Папа)</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    Попов Павел-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            <tr role="row" class="odd">-->
-<!--                <td>-->
-<!--                    <strong>Дата старта обучения</strong>-->
-<!--                </td>-->
-<!--                <td>-->
-<!--                    1.1.2000-->
-<!--                </td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
-<!--</div>-->
+

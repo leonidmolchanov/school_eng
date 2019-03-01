@@ -25,7 +25,7 @@ if ($arResult['SHOW_ERRORS'] == 'Y' && $arResult['ERROR'])
                     <div class="col-xs-12">
                         <div class="input-group">
                             <input type="text" id="login-email" name="USER_LOGIN" placeholder="<?=GetMessage("AUTH_LOGIN")?>" class="form-control">
-                            <span class="input-group-addon"><i class="fa fa-envelope-o fa-user"></i></span>
+                            <span class="input-group-addon"><i class="fa  fa-user"></i></span>
                         </div>
                     </div>
                 </div>
@@ -46,11 +46,15 @@ if ($arResult['SHOW_ERRORS'] == 'Y' && $arResult['ERROR'])
                     <div class="col-xs-12">
                         <div class="input-group">
                             <input type="password" id="login-password" name="USER_PASSWORD" placeholder="<?=GetMessage("AUTH_PASSWORD")?>" class="form-control" autocomplete="off" >
-                            <span class="input-group-addon"><i class="fa fa-asterisk fa-fw"></i></span>
+                            <span  class="input-group-addon"><a  alt="Показать пароль" onclick="showPassword()" class="gi gi-search "></a></span>
                         </div>
                     </div>
                 </div>
-
+<script>
+    function showPassword() {
+        document.querySelector('#login-password').attributes["type"].value = "text";
+    }
+</script>
 <?if($arResult["SECURE_AUTH"]):?>
 				<span class="bx-auth-secure" id="bx_auth_secure<?=$arResult["RND"]?>" title="<?echo GetMessage("AUTH_SECURE_NOTE")?>" style="display:none">
 					<div class="bx-auth-secure-icon"></div>
@@ -126,7 +130,22 @@ elseif($arResult["FORM_TYPE"] == "otp"):
 <?
 else:
 ?>
+<?
+global $USER;
+$redirect=false;
+$arGroups = $USER->GetUserGroupArray();
+
+foreach ($arGroups as $state) {
+    if ($state == 9) {
+        $redirect = true;
+    }
+}
+?>
+    <?if($redirect):?>
+    <script>window.location.replace('/schedule.php');</script>
+    <?else:?>
     <script>window.location.replace('/profile/');</script>
+    <?endif;?>
 <form action="<?=$arResult["AUTH_URL"]?>">
 	<table width="95%">
 		<tr>

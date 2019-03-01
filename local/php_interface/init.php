@@ -26,6 +26,11 @@ function costDemon(){
 
     return "costDemon();";
 }
+function transactionDemon(){
+    require("check-transaction.php");
+
+    return "transactionDemon();";
+}
 require("pay-modify.php");
 
 function lessonProc($id, $val, $type){

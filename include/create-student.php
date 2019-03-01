@@ -69,6 +69,7 @@ if (intval($ID) > 0):
     $PROP["COMMENTS"] = $_REQUEST["comments"];
     $PROP["STATUS"] = 1;
     $PROP["USERID"] = $ID;
+    $PROP["LESSON_BALANCE"]=0;
     $arLoadProductArray = Array(
         "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
         "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

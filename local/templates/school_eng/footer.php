@@ -45,7 +45,6 @@ use Bitrix\Main\Page\Asset;
 <script src="<?=SITE_TEMPLATE_PATH?>/js/plugins.js"></script>
 <script src="<?=SITE_TEMPLATE_PATH?>/js/main.js"></script>
 <script src="<?=SITE_TEMPLATE_PATH?>/js/ion.sound.min.js"></script>
-
 <script src="<?=SITE_TEMPLATE_PATH?>/js/sweetalert2.all.min.js"></script>
 <!--<script src="--><?//=SITE_TEMPLATE_PATH?><!--/js/moment-with-locales.min.js"></script>-->
 <!-- Javascript code only for this page -->

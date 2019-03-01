@@ -7,6 +7,8 @@
  */
 
 $room=[];
+    $group=[];
+
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
@@ -25,12 +27,30 @@ if (CModule::IncludeModule("iblock")):
         array_push($room[$ar_fields['ID']], $ar_fields);
     }
 endif;
+if (CModule::IncludeModule("iblock")):
+    # show url my elements
+    $my_elements = CIBlockElement::GetList (
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'GROUP'),
+        false,
+        false,
+        Array('ID', 'PROPERTY_TEACHER')
+    );
+
+    while($ar_fields = $my_elements->GetNext())
+    {
+//        if($ar_fields['PROPERTY_TEACHER_VALUE']==$_REQUEST['teacherId']) {
+            array_push($group , $ar_fields['ID']);
+//        }
+    }
+endif;
 $lessons = $room;
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList(
         Array("PROPERTY_TO" => "ASC"),
         Array("IBLOCK_CODE" => 'LESSON',
+            'PROPERTY_GROUP'=> $group,
             '>=PROPERTY_FROM' => date("Y-m-d", strtotime($_REQUEST['dateFrom'])).' '.date("H:i:s", strtotime($_REQUEST['timeFrom'])),
             '<=PROPERTY_FROM' => date("Y-m-d", strtotime($_REQUEST['dateTo'])).' '.date("H:i:s", strtotime($_REQUEST['timeTo']))),
         false,

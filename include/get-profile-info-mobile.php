@@ -5,12 +5,22 @@
  * Date: 17/12/2018
  * Time: 01:05
  */
+$dbUser = CUser::GetByID($USER->GetID());
+$arUser = $dbUser->Fetch();
+if($arUser["PERSONAL_PHOTO"]){
+    $URL = CFile::GetPath($arUser["PERSONAL_PHOTO"]);
+
+}
+else{
+    $URL='/local/templates/school_eng/img/noPhoto.png';
+}
 $request=[];
-$request['TEST']=$USER->GetID();
+
+$request['PROFILE_URL']='https://'.SITE_SERVER_NAME.$URL;
 $request['STUDENT']=[];
 $request['GROUP']=[];
 $request['STUDY']=[];
-$request['JOURNAL']=Array('BE'=>Array(),'NOTBE'=>Array(),'DISEASE'=>Array());
+$request['JOURNAL']=Array();
 $studentID=[];
 $groupID=[];
 $teacher=[];
@@ -24,9 +34,9 @@ if (CModule::IncludeModule("iblock")):
         Array('ID','PROPERTY_DOGOVOR','PROPERTY_NAME',
             'PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME',
             'PROPERTY_BIRTHDAY','PROPERTY_TEL',
-        'PROPERTY_FATHER_NAME','PROPERTY_FATHER_LAST_NAME','PROPERTY_FATHER_SECOND_NAME','PROPERTY_FATHER_TEL',
-        'PROPERTY_MOTHER_NAME','PROPERTY_MOTHER_SECOND_NAME','PROPERTY_MOTHER_LAST_NAME','PROPERTY_MOTHER_TEL',
-        'PROPERTY_COMMENTS','PROPERTY_USERID','PROPERTY_BALANCE')
+            'PROPERTY_FATHER_NAME','PROPERTY_FATHER_LAST_NAME','PROPERTY_FATHER_SECOND_NAME','PROPERTY_FATHER_TEL',
+            'PROPERTY_MOTHER_NAME','PROPERTY_MOTHER_SECOND_NAME','PROPERTY_MOTHER_LAST_NAME','PROPERTY_MOTHER_TEL',
+            'PROPERTY_COMMENTS','PROPERTY_USERID','PROPERTY_BALANCE')
     );
 
     while($ar_fields = $my_elements->GetNext())
@@ -47,8 +57,9 @@ if (CModule::IncludeModule("iblock")):
 
     while($ar_fields = $my_elements->GetNext())
     {
+        $ar_fields['TYPE']=1;
 
-        array_push($request['JOURNAL']['BE'], $ar_fields);
+        array_push($request['JOURNAL'], $ar_fields);
 
     }
     $my_elements = CIBlockElement::GetList (
@@ -61,8 +72,8 @@ if (CModule::IncludeModule("iblock")):
 
     while($ar_fields = $my_elements->GetNext())
     {
-
-        array_push($request['JOURNAL']['NOTBE'], $ar_fields);
+        $ar_fields['TYPE']=0;
+        array_push($request['JOURNAL'], $ar_fields);
 
     }
     $my_elements = CIBlockElement::GetList (
@@ -75,8 +86,9 @@ if (CModule::IncludeModule("iblock")):
 
     while($ar_fields = $my_elements->GetNext())
     {
+        $ar_fields['TYPE']=2;
 
-        array_push($request['JOURNAL']['DISEASE'], $ar_fields);
+        array_push($request['JOURNAL'], $ar_fields);
 
     }
     $my_elements = CIBlockElement::GetList (
@@ -93,10 +105,10 @@ if (CModule::IncludeModule("iblock")):
     }
 
     // Если что-то есть..
-if(empty($groupID)):
-    $groupID=0;
+    if(empty($groupID)):
+        $groupID=0;
     endif;
-        $my_elements = CIBlockElement::GetList (
+    $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
         Array("IBLOCK_CODE" => 'GROUP', 'ID'=>$groupID),
         false,
@@ -145,12 +157,12 @@ function getColor($auditID){
         false,
         Array('ID', 'PROPERTY_COLOR')
     );
-$result="";
+    $result="";
     while($ar_fields = $my_elements->GetNext())
     {
         $result = $ar_fields['PROPERTY_COLOR_VALUE'];
     }
-return $result;
+    return $result;
 }
 
 function getTeacher($teacherID){

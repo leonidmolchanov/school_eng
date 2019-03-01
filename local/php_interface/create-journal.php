@@ -88,12 +88,17 @@
             "NAME" => $lessonName . "(" . date("d.m.Y", strtotime(now)) . ")",
             "ACTIVE" => "Y"
         );
+
+        if($PROP["LESSONID"]):
         $request = "";
         if ($PRODUCT_ID = $el->Add($arLoadProductArray))
             $request = 'Success';
         else
             $request = 'Error' . $_REQUEST["name"];
+$message = "Создан журнал ".$lessonName . "(" . date("d.m.Y", strtotime(now)) . ")";
+        require("push.php");
 
+    endif;
     }
 
     function getStudent($id, $lesson, $lessonName)

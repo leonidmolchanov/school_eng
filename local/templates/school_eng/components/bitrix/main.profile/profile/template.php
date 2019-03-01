@@ -48,6 +48,7 @@ else if($privilege===4){?>
                             <?=$arResult["arUser"]["PERSONAL_PHOTO_HTML"];?>
             </div>
             <div class="list-group">
+                <a href="javascript:void(0)" onclick="window.location.reload()" class="list-group-item">Главная</a>
                 <a href="javascript:void(0)" onclick="historyPay()" class="list-group-item">История платежей</a>
                 <a href="javascript:void(0)" onclick="historyVisit()" class="list-group-item">История посещений</a>
                 <a href="javascript:void(0)" onclick="feedback()" class="list-group-item">Обратная связь</a>
@@ -142,10 +143,10 @@ else if($privilege===4){?>
         </div>
         <div id="historyVisit-content">
             <div class="col-md-6 push">
-                <div id="example-datatables2_wrapper" class="dataTables_wrapper form-inline no-footer">
-                    <table id="example-datatables2"
+                <div id="example-datatables2_wrapper" class="">
+                    <table id="profile-visit"
                            class="table table-striped table-bordered table-hover dataTable no-footer" role="grid"
-                           aria-describedby="example-datatables2_info">
+                           aria-describedby="example-datatables3_info">
                         <thead>
                         <tr role="row">
                             <th class="text-center sorting_asc" tabindex="0" aria-controls="example-datatables2"
@@ -156,45 +157,16 @@ else if($privilege===4){?>
                                 aria-label=" Username: activate to sort column ascending" style="width: 252px;">Дата:
                             </th>
                             <th class="sorting" tabindex="0" aria-controls="example-datatables2" rowspan="1" colspan="1"
+                                aria-label=" Username: activate to sort column ascending" style="width: 252px;">Название:
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="example-datatables2" rowspan="1" colspan="1"
                                 aria-label=" Status: activate to sort column ascending" style="width: 326px;">Статус:
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr role="row" class="odd">
-                            <td class="text-center sorting_1">1</td>
-                            <td>14.12.2018 16:35</td>
-                            <td><span class="label label-success">Был</span></td>
-                        </tr><tr role="row" class="even">
-                            <td class="text-center sorting_1">2</td>
-                            <td>14.12.2018 16:35</td>
-                            <td><span class="label label-danger">Не был</span></td>
-                        </tr><tr role="row" class="even">
-                            <td class="text-center sorting_1">3</td>
-                            <td>14.12.2018 16:35</td>
-                            <td><span class="label label-primary">Болезнь</span></td>
-                        </tr>
                         </tbody>
                     </table>
-                    <div class="row">
-                        <div class="col-sm-5 hidden-xs">
-                            <div class="dataTables_info" id="example-datatables2_info" role="status" aria-live="polite">
-                                <strong>1</strong>-<strong>10</strong> из <strong>30</strong></div>
-                        </div>
-                        <div class="col-sm-7 col-xs-12 clearfix">
-                            <div class="dataTables_paginate paging_bootstrap" id="example-datatables2_paginate">
-                                <ul class="pagination pagination-sm remove-margin">
-                                    <li class="prev disabled"><a href="javascript:void(0)"><i
-                                                    class="fa fa-chevron-left"></i> </a></li>
-                                    <li class="active"><a href="javascript:void(0)">1</a></li>
-                                    <li><a href="javascript:void(0)">2</a></li>
-                                    <li><a href="javascript:void(0)">3</a></li>
-                                    <li class="next"><a href="javascript:void(0)"> <i
-                                                    class="fa fa-chevron-right"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -257,14 +229,70 @@ while ($arFields = $res->Fetch())
 <!--            </div>-->
 
 
+            <?
+            $studentid=0;
+            $studentbalance=0;
+            if (CModule::IncludeModule("iblock")):
+                # show url my elements
+                $my_elements = CIBlockElement::GetList (
+                    Array("ID" => "ASC"),
+                    Array("IBLOCK_CODE" => 'STUDENTS', "PROPERTY_USERID" => $USER->GetID()),
+                    false,
+                    false,
+                    Array('ID', 'PROPERTY_LESSON_BALANCE')
+                );
 
+                while($ar_fields = $my_elements->GetNext())
+                {
+                    $studentid = $ar_fields['ID'];
+                    $studentbalance = $ar_fields['PROPERTY_LESSON_BALANCE_VALUE'];
+                }
+            endif;
+            $groupid=0;
+            if (CModule::IncludeModule("iblock")):
+                # show url my elements
+                $my_elements = CIBlockElement::GetList (
+                    Array("ID" => "ASC"),
+                    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_STUDENT_ID" => $studentid),
+                    false,
+                    false,
+                    Array('ID', 'PROPERTY_GROUP_ID')
+                );
+
+                while($ar_fields = $my_elements->GetNext())
+                {
+                    $groupid = $ar_fields['PROPERTY_GROUP_ID_VALUE'];
+                }
+            endif;
+            $costid=0;
+            if (CModule::IncludeModule("iblock")):
+                # show url my elements
+                $my_elements = CIBlockElement::GetList (
+                    Array("ID" => "ASC"),
+                    Array("IBLOCK_CODE" => 'GROUP', "ID" => $groupid),
+                    false,
+                    false,
+                    Array('ID', 'PROPERTY_LESSON_COST')
+                );
+
+                while($ar_fields = $my_elements->GetNext())
+                {
+                    $costid = $ar_fields['PROPERTY_LESSON_COST_VALUE'];
+                }
+            endif;
+            ?>
 
         </div>
-            <?$APPLICATION->IncludeComponent("bitrix:sale.personal.account", "sale.count", Array(
-                "SET_TITLE" => "Y",	// Устанавливать заголовок страницы
-            ),
-                false
-            );?>
+            <div class="col-md-3 text-center">
+                <!-- Total Profit Tile -->
+                <div class="dash-tile dash-tile-leaf clearfix animation-pullDown">
+                    <div class="dash-tile-header">
+                                    <span class="dash-tile-options">
+                                    </span>
+                        Кол-во доступных занятий                    </div>
+                    <h4 class="text-active"><?=$studentbalance?></h4>
+
+                </div>
         </div>
         </div>
         <!-- END Second Column | Main content -->
@@ -272,13 +300,12 @@ while ($arFields = $res->Fetch())
 
         <div class="col-md-3 text-center">
             <h5 class="page-header-sub">Оплата:</h5>
-            <div class="input-group">
-                <input type="number" id="example-input-append-btn2" name="example-input-append-btn2" class="form-control" placeholder="Сумма">
-                <span class="input-group-btn">
-                                            <button class="btn btn-success">Пополнить</button>
-                                        </span>
-            </div>
-
+<!--            <div class="input-group">-->
+<!--                <input type="number" id="example-input-append-btn2" name="example-input-append-btn2" class="form-control" placeholder="Сумма">-->
+<!--                <span class="input-group-btn">-->
+<!--                                            <button class="btn btn-success">Пополнить</button>-->
+<!--                                        </span>-->
+<!--            </div>-->
 
             <?$APPLICATION->IncludeComponent(
                 "bitrix:catalog.element",
@@ -296,7 +323,7 @@ while ($arFields = $res->Fetch())
                         0 => "BUY",
                     ),
                     "BACKGROUND_IMAGE" => "-",
-                    "BASKET_URL" => "/profile/order.php",
+                    "BASKET_URL" => "/profile/basket.php",
                     "BRAND_USE" => "N",
                     "BROWSER_TITLE" => "-",
                     "CACHE_GROUPS" => "Y",
@@ -315,7 +342,7 @@ while ($arFields = $res->Fetch())
                     "DISPLAY_NAME" => "Y",
                     "DISPLAY_PREVIEW_TEXT_MODE" => "E",
                     "ELEMENT_CODE" => "lesson",
-                    "ELEMENT_ID" => "29",
+                    "ELEMENT_ID" => $costid,
                     "GIFTS_DETAIL_BLOCK_TITLE" => "Выберите один из подарков",
                     "GIFTS_DETAIL_HIDE_BLOCK_TITLE" => "N",
                     "GIFTS_DETAIL_PAGE_ELEMENT_COUNT" => "4",
@@ -329,8 +356,8 @@ while ($arFields = $res->Fetch())
                     "GIFTS_SHOW_NAME" => "Y",
                     "GIFTS_SHOW_OLD_PRICE" => "Y",
                     "HIDE_NOT_AVAILABLE_OFFERS" => "N",
-                    "IBLOCK_ID" => "3",
-                    "IBLOCK_TYPE" => "products",
+                    "IBLOCK_ID" => "9",
+                    "IBLOCK_TYPE" => "school",
                     "IMAGE_RESOLUTION" => "16by9",
                     "LINK_ELEMENTS_URL" => "link.php?PARENT_ELEMENT_ID=#ELEMENT_ID#",
                     "LINK_IBLOCK_ID" => "",
@@ -376,7 +403,7 @@ while ($arFields = $res->Fetch())
                     "SHOW_404" => "N",
                     "SHOW_CLOSE_POPUP" => "N",
                     "SHOW_DEACTIVATED" => "N",
-                    "SHOW_DISCOUNT_PERCENT" => "N",
+                    "SHOW_DISCOUNT_PERCENT" => "Y",
                     "SHOW_MAX_QUANTITY" => "N",
                     "SHOW_OLD_PRICE" => "N",
                     "SHOW_PRICE_COUNT" => "1",
@@ -390,17 +417,17 @@ while ($arFields = $res->Fetch())
                     "USE_GIFTS_MAIN_PR_SECTION_LIST" => "Y",
                     "USE_MAIN_ELEMENT_SECTION" => "N",
                     "USE_PRICE_COUNT" => "Y",
-                    "USE_PRODUCT_QUANTITY" => "Y",
+                    "USE_PRODUCT_QUANTITY" => "N",
                     "USE_RATIO_IN_RANGES" => "N",
                     "USE_VOTE_RATING" => "N",
                     "COMPONENT_TEMPLATE" => ".default",
                     "ADD_PICT_PROP" => "-",
                     "LABEL_PROP" => array(
-                    )
+                    ),
+                    "DISCOUNT_PERCENT_POSITION" => "top-right"
                 ),
                 false
             );?>
-
             <h5 class="page-header-sub"><i class="fa fa-certificate"></i> Занятия</h5>
             <table class="table table-borderless" id="study-list-table">
                 <tbody>
@@ -419,6 +446,21 @@ while ($arFields = $res->Fetch())
                 <div id="student-contact"></div>
             </address>
             </div>
+            <h5 class="page-header-sub"><i class="fa fa-certificate"></i> Контакты школы</h5>
+            <address>
+                <div>
+                    Контакты: СПб ул. Пулковская д. 2 корп 3 рядом с 9 роддомом
+                </div>
+                <div>
+                    тел. +7(951)663552
+                </div>
+                <div>
+                    e-mail: zvezdnaya@lingvitan.ru
+                </div>
+                <div>
+                    <a href="https://vk.com/topic-97089486_34413234?offset=0"> оставить отзыв о нашей работе </a>
+                </div>
+            </address>
         </div>
         <!-- END Third Column | Right Sidebar -->
     </div>
@@ -428,41 +470,6 @@ while ($arFields = $res->Fetch())
 else{?>
 Ваш статус не определен
 <?}?>
-
-<script>
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-    function play( snd ) {
-        console.log(snd)
-        var audioCtx = new AudioContext();
-
-        var request = new XMLHttpRequest();
-        request.open( "GET", snd, true );
-        request.responseType = "arraybuffer";
-        request.onload = function () {
-            var audioData = request.response;
-
-            audioCtx.decodeAudioData(
-                audioData,
-                function ( buffer ) {
-                    var smp = audioCtx.createBufferSource();
-                    smp.buffer = buffer;
-                    smp.connect( audioCtx.destination );
-                    smp.start( 0 );
-                },
-                function ( e ) {
-                    alert( "Error with decoding audio data" + e.err );
-                }
-            );
-        };
-        request.send();
-    }
-    document.querySelector('button').addEventListener('click', function() {
-        context.resume().then(() => {
-            console.log('Playback resumed successfully');
-        });
-    });
-</script>
 <script>
 
 
@@ -486,9 +493,38 @@ else{?>
             onsuccess: function (data) {
                 console.log(data)
                 if(data.STUDENT){
-                    $('#father-contact').append('Отец : '+data.STUDENT['PROPERTY_FATHER_LAST_NAME_VALUE']+' '+data.STUDENT['PROPERTY_FATHER_NAME_VALUE']+' '+data.STUDENT['PROPERTY_FATHER_SECOND_NAME_VALUE']+' <br>'+data.STUDENT['PROPERTY_FATHER_TEL_VALUE']+'<br>')
-                    $('#mother-contact').append('Мать : '+data.STUDENT['PROPERTY_MOTHER_LAST_NAME_VALUE']+' '+data.STUDENT['PROPERTY_MOTHER_NAME_VALUE']+' '+data.STUDENT['PROPERTY_MOTHER_SECOND_NAME_VALUE']+' <br>'+data.STUDENT['PROPERTY_MOTHER_TEL_VALUE']+'<br>')
-                    $('#student-contact').append('Личный номер : '+data.STUDENT['PROPERTY_TEL_VALUE'])
+                    fatherString="";
+                    motherString="";
+                    if(data.STUDENT['PROPERTY_FATHER__NAME_VALUE']){
+                        fatherString+= data.STUDENT['PROPERTY_FATHER__NAME_VALUE']
+                    }
+                    if(data.STUDENT['PROPERTY_FATHER_NAME_VALUE']){
+                        fatherString+=data.STUDENT['PROPERTY_FATHER_NAME_VALUE'];
+                    }
+                    if(data.STUDENT['PROPERTY_FATHER_SECOND_NAME_VALUE']){
+                        fatherString+=data.STUDENT['PROPERTY_FATHER_SECOND_NAME_VALUE'];
+                    }
+                    if(data.STUDENT['PROPERTY_FATHER_TEL_VALUE']){
+                        fatherString+=' <br>' + data.STUDENT['PROPERTY_FATHER_TEL_VALUE'] + '<br>'
+                    }
+                        $('#father-contact').append('Отец : ' + fatherString)
+                    if(data.STUDENT['PROPERTY_MOTHER__NAME_VALUE']){
+                        motherString+= data.STUDENT['PROPERTY_MOTHER__NAME_VALUE']
+                    }
+                    if(data.STUDENT['PROPERTY_MOTHER_NAME_VALUE']){
+                        motherString+=data.STUDENT['PROPERTY_MOTHER_NAME_VALUE'];
+                    }
+                    if(data.STUDENT['PROPERTY_MOTHER_SECOND_NAME_VALUE']){
+                        motherString+=data.STUDENT['PROPERTY_MOTHER_SECOND_NAME_VALUE'];
+                    }
+                    if(data.STUDENT['PROPERTY_MOTHER_TEL_VALUE']){
+                        motherString+=' <br>' + data.STUDENT['PROPERTY_MOTHER_TEL_VALUE'] + '<br>'
+                    }
+                    $('#mother-contact').append('Мать : '+ motherString)
+                    if(data.STUDENT['PROPERTY_TEL_VALUE']){
+                        $('#student-contact').append('Личный номер : '+data.STUDENT['PROPERTY_TEL_VALUE'])
+                    }
+
                 }
                 if(data.STUDY.length!==0){
 
@@ -521,7 +557,41 @@ else{?>
                         '                <p><h4 class="text-active">'+data.STUDY[0]['TEACHER']['PROPERTY_NAME_VALUE']+' '+data.STUDY[0]['TEACHER']['PROPERTY_LAST_NAME_VALUE']+'</h4></p></div>\n' +
                         '            </div>')
             }
+if(data.JOURNAL.BE.length!==0){
+number=0;
+    data.JOURNAL.BE.forEach(function (item) {
+        date=item['DATE_CREATE'].split(' ')
+        $('#profile-visit tbody').append(' <tr role="row" class="odd">\n' +
+            '                            <td class="text-center sorting_1">'+number+'</td>\n' +
+            '                            <td>'+date[0]+'</td>\n' +
+            '                            <td><span class="label label-default">'+item['NAME']+'</span></td>\n' +
+            '                            <td><span class="label label-success">Был</span></td>\n' +
+            '                        </tr>')
+    number++
+    })
+    data.JOURNAL.NOTBE.forEach(function (item) {
+        date=item['DATE_CREATE'].split(' ')
+        $('#profile-visit tbody').append(' <tr role="row" class="odd">\n' +
+            '                            <td class="text-center sorting_1">'+number+'</td>\n' +
+            '                            <td>'+date[0]+'</td>\n' +
+            '                            <td><span class="label label-default">'+item['NAME']+'</span></td>\n' +
+            '                            <td><span class="label label-danger">Не был</span></td>\n' +
+            '                        </tr>')
+        number++
+    })
+    data.JOURNAL.DISEASE.forEach(function (item) {
+        date=item['DATE_CREATE'].split(' ')
+        $('#profile-visit tbody').append(' <tr role="row" class="odd">\n' +
+            '                            <td class="text-center sorting_1">'+number+'</td>\n' +
+            '                            <td>'+date[0]+'</td>\n' +
+            '                            <td><span class="label label-default">'+item['NAME']+'</span></td>\n' +
+            '                            <td><span class="label label-warning">Болел</span></td>\n' +
+            '                        </tr>')
+        number++
+    })
+    $('#profile-visit').dataTable();
 
+}
             }
         });
 
@@ -572,16 +642,6 @@ function historyVisit() {
 
 
 
-    BX.addCustomEvent("onPullEvent", BX.delegate(function(module_id,command,params){
-        console.log(module_id, command, params);
-        url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/js/message.mp3';
-        play(url)
-        Swal(
-            command,
-            params[0],
-            'success'
-        )
-    }, this))
 
 
 </script>
