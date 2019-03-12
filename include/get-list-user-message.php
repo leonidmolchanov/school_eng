@@ -32,8 +32,8 @@ $users=[];
 $filter = Array();
 $rsUsers = CUser::GetList(($by = "ID"), ($order = "desc"), $filter);
 while ($arUser = $rsUsers->Fetch()) {
-    if(CFile::GetPath($arUser['ID'])) {
-        $users[$arUser['ID']] = 'https://'.SITE_SERVER_NAME.CFile::GetPath($arUser['ID']);
+    if(CFile::GetPath($arUser['PERSONAL_PHOTO'])) {
+        $users[$arUser['ID']] = 'https://'.SITE_SERVER_NAME.CFile::GetPath($arUser['PERSONAL_PHOTO']);
     }
     else{
         $users[$arUser['ID']] = 'https://'.SITE_SERVER_NAME.'/local/templates/school_eng/img/noPhoto.png';

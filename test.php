@@ -113,6 +113,16 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 </div>
 </div>
 <script>
+    function showFullMenu(){
+
+       let messageList = document.querySelectorAll(".message-item")
+
+        messageList.forEach(function (message) {
+message.style.display='block'
+            console.log(message.style.display)
+        })
+        initMessage();
+    }
     BX.ready(function() {
         ajaxLoad = function(){
         $('#successButton').hide()
@@ -139,15 +149,22 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
                 i = 0;
                 message = data.map(function (item) {
                     i++
-                    return '<li class="">\n' +
-                        '                        <a href="javascript:void(0)" data-avatar ="' + item.avatar + '"  data-from="' + item.from + '"  data-date="' + item.date + '"  id="msg' + i + '" class="">\n' +
+                    return i>7?('<li class="message-item" style="display: none">\n'):('<li class="">\n') +
+                        '                        <br><div><img src="'+item.avatar+'" width="40px" height="40px" alt="fakeimg" class="img-circle">' +
+                        '<a href="javascript:void(0)" data-avatar ="' + item.avatar + '"  data-from="' + item.from + '"  data-date="' + item.date + '"  id="msg' + i + '" class="">\n' +
                         '                            <span class="inbox-messages-list-username">' + item.name + '</span> <span class="inbox-messages-list-meta">' + item.date + '</span><br>\n' +
                         '                            <span class="inbox-messages-list-preview">' + item.text + '</span>\n' +
                         '                        </a>\n' +
-                        '                    </li>'
+                        '                    </li></div>'
+
 
                 })
+
+
+
                 $('#inbox-messages-list').prepend(message);
+                // $('#inbox-messages-list').append('<li class=""><a href="#" onClick="showFullMenu()" > Далее...</a></li>')
+
                 initMessage();
             }
 
@@ -257,12 +274,13 @@ if(type!=='newMessage'){
             i = 0;
             message = data.map(function (item) {
                 i++
-                return '<li class="">\n' +
+                return i>7?('<li class="message-item" style="display: none">\n'):('<li class="">\n') +
+                    '                        <br><div><img src="'+item.avatar+'" width="40px" height="40px" alt="fakeimg" class="img-circle">' +
                     '                        <a href="javascript:void(0)" data-avatar ="' + item.avatar + '"  data-from="' + item.from + '"  data-date="' + item.date + '"  id="msg' + i + '" class="">\n' +
                     '                            <span class="inbox-messages-list-username">' + item.name + '</span> <span class="inbox-messages-list-meta">' + item.date + '</span><br>\n' +
                     '                            <span class="inbox-messages-list-preview">' + item.text + '</span>\n' +
                     '                        </a>\n' +
-                    '                    </li>'
+                    '                    </li></div>'
 
             })
             $('#inbox-messages-list').prepend(message);
@@ -422,6 +440,13 @@ function closePopup() {
 
     });
 
+
+    document.querySelector('#global-text-area').addEventListener('keypress', function (e) {
+        var key = e.which || e.keyCode;
+        if (key === 13) { // 13 is enter
+            sendMessage()
+        }
+    });
 </script>
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

@@ -95,6 +95,7 @@
             $request = 'Success';
         else
             $request = 'Error' . $_REQUEST["name"];
+        $pushtype="journal";
 $message = "Создан журнал ".$lessonName . "(" . date("d.m.Y", strtotime(now)) . ")";
         require("push.php");
 

@@ -10,6 +10,7 @@ $request['TEST']=$USER->GetID();
 $request['STUDENT']=[];
 $request['GROUP']=[];
 $request['STUDY']=[];
+$request['ADJUSTMENT']=[];
 $request['JOURNAL']=Array('BE'=>Array(),'NOTBE'=>Array(),'DISEASE'=>Array());
 $studentID=[];
 $groupID=[];
@@ -136,6 +137,46 @@ foreach ($request['GROUP'] as $value) {
     }
 
 }
+
+function getLesson($id){
+    $result=[];
+    $my_elements = CIBlockElement::GetList (
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'LESSON', "ID" => $id),
+        false,
+        false,
+        Array('ID', 'NAME', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_AUDITORIUM', 'PROPERTY_GROUP')
+    );
+    $result=[];
+    while($ar_fields = $my_elements->GetNext())
+    {
+        $ar_fields['PROPERTY_FROM_VALUE']=date('Y-m-d H:i', strtotime($ar_fields['PROPERTY_FROM_VALUE']));
+        $ar_fields['PROPERTY_TO_VALUE']=date('Y-m-d H:i', strtotime($ar_fields['PROPERTY_TO_VALUE']));
+        $result = $ar_fields;
+    }
+    return $result;
+}
+
+
+if (CModule::IncludeModule("iblock")):
+    # show url my elements
+    $my_elements = CIBlockElement::GetList(
+        Array("ID" => "ASC"),
+        Array("IBLOCK_CODE" => 'ADJUSTMENT', 'PROPERTY_USERID'=> $studentID),
+        false,
+        false,
+        Array('ID', 'PROPERTY_USERID', 'PROPERTY_ALESSONID', 'PROPERTY_DATASET', 'PROPERTY_DESCRIPTION', 'NAME', 'PROPERTY_STATUS'
+        )
+    );
+
+    while ($ar_fields = $my_elements->GetNext()) {
+        if ($ar_fields['PROPERTY_STATUS_VALUE'] == 0) {
+            $ar_fields['LESSON'] = getLesson($ar_fields['PROPERTY_ALESSONID_VALUE']);
+            array_push($request['ADJUSTMENT'], $ar_fields);
+        }
+
+    }
+endif;
 function getColor($auditID){
 
     $my_elements = CIBlockElement::GetList (
@@ -152,6 +193,9 @@ $result="";
     }
 return $result;
 }
+
+
+
 
 function getTeacher($teacherID){
 

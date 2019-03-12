@@ -8,6 +8,7 @@
 
 $room=[];
     $group=[];
+    $groupCheck=[];
 
 if (CModule::IncludeModule("iblock")):
     # show url my elements
@@ -42,6 +43,9 @@ if (CModule::IncludeModule("iblock")):
 //        if($ar_fields['PROPERTY_TEACHER_VALUE']==$_REQUEST['teacherId']) {
             array_push($group , $ar_fields['ID']);
 //        }
+                if($ar_fields['PROPERTY_TEACHER_VALUE']==$_REQUEST['teacherId']) {
+        array_push($groupCheck , $ar_fields['ID']);
+        }
     }
 endif;
 $lessons = $room;
@@ -51,7 +55,7 @@ if (CModule::IncludeModule("iblock")):
         Array("PROPERTY_TO" => "ASC"),
         Array("IBLOCK_CODE" => 'LESSON',
             'PROPERTY_GROUP'=> $group,
-            '>=PROPERTY_FROM' => date("Y-m-d", strtotime($_REQUEST['dateFrom'])).' '.date("H:i:s", strtotime($_REQUEST['timeFrom'])),
+            '>=PROPERTY_TO' => date("Y-m-d", strtotime($_REQUEST['dateFrom'])).' '.date("H:i:s", strtotime($_REQUEST['timeFrom'])),
             '<=PROPERTY_FROM' => date("Y-m-d", strtotime($_REQUEST['dateTo'])).' '.date("H:i:s", strtotime($_REQUEST['timeTo']))),
         false,
         false,
@@ -61,6 +65,15 @@ if (CModule::IncludeModule("iblock")):
     while ($ar_fields = $my_elements->GetNext()) {
         if(!$lessons[$ar_fields['PROPERTY_AUDITORIUM_VALUE']]){
             $lessons[$ar_fields['PROPERTY_AUDITORIUM_VALUE']]=[];
+        }
+        if(in_array($ar_fields['PROPERTY_GROUP_VALUE'], $groupCheck))
+        {
+
+            foreach ($room as $key => $value) {
+if($ar_fields['PROPERTY_AUDITORIUM_VALUE']!==$key){
+    array_push($lessons[$key], $ar_fields);
+}
+            }
         }
         array_push($lessons[$ar_fields['PROPERTY_AUDITORIUM_VALUE']], $ar_fields);
     }
@@ -99,13 +112,6 @@ if(!$starttime){
             array_push($freetime, $e);
         }
 
-//    if(empty($value[$key])){
-//        $e=[];
-//        $e['FROM']=date("d.m.Y H:i:s",$starttime);
-//        $e['TO']=date("d.m.Y H:i:s",$endtime);
-//        $e['AUDITORIUM'] = $key;
-//        array_push($freetime, $e);
-//    }
 }
 
 $request=Array('FREETIME'=>$freetime, 'AUDITORIUM'=> $room);

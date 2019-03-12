@@ -101,6 +101,7 @@ foreach ($response2 as $item){
 
             if ($PRODUCT_ID = $el->Add($arLoadProductArray)) {
                 echo 'Success';
+                $pushtype ='pay';
                 $message = "Была произведена оплата № ".$result['number']." на сумму ".$result['sum']." рублей";
                 require("push.php");
             }

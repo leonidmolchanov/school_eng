@@ -11,10 +11,15 @@ CModule::IncludeModule('group');
 
 $adminArr = CGroup::GetGroupUser(1);
 $methodistArr = CGroup::GetGroupUser(9);
-
+if($pushtype){
+    $pushtype = $pushtype;
+}
+else{
+    $pushtype='false';
+}
 CPullStack::AddByUsers(
     $adminArr, Array(
-    'module_id' => 'test',
+    'module_id' => $pushtype,
     'command' => $message,
     'params' => Array(
         'message' => Array($message)
@@ -22,7 +27,7 @@ CPullStack::AddByUsers(
 ));
 CPullStack::AddByUsers(
     $methodistArr, Array(
-    'module_id' => 'test',
+    'module_id' => $pushtype,
     'command' => $message,
     'params' => Array(
         'message' => Array($message)

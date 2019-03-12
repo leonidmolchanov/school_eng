@@ -434,7 +434,7 @@ while ($arFields = $res->Fetch())
                 </tbody>
             </table>
             <h5 class="page-header-sub"><i class="fa fa-certificate"></i> Отработки</h5>
-            <table class="table table-borderless">
+            <table class="table table-borderless" id="adj-list-table">
                 <tbody>
                 </tbody>
             </table>
@@ -557,6 +557,20 @@ else{?>
                         '                <p><h4 class="text-active">'+data.STUDY[0]['TEACHER']['PROPERTY_NAME_VALUE']+' '+data.STUDY[0]['TEACHER']['PROPERTY_LAST_NAME_VALUE']+'</h4></p></div>\n' +
                         '            </div>')
             }
+
+                if(data.ADJUSTMENT.length!==0){
+
+                    data.ADJUSTMENT.map(function (item) {
+                        dateFrom=item.LESSON['PROPERTY_FROM_VALUE'].split(' ');
+                        dateTo=item.LESSON['PROPERTY_TO_VALUE'].split(' ');
+                        $('#adj-list-table').append('<tr>\n' +
+                            '                    <td>\n' +
+                            '                        '+item.LESSON['NAME']+' ('+dateFrom[0]+') '+dateFrom[1]+'-'+dateTo[1]+'\n' +
+                            '                    </td>\n' +
+                            '                </tr>')
+                    })
+                }
+
 if(data.JOURNAL.BE.length!==0){
 number=0;
     data.JOURNAL.BE.forEach(function (item) {

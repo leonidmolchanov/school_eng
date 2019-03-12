@@ -84,7 +84,18 @@ global $USER;
                 BX.addCustomEvent("onPullEvent", BX.delegate(function (module_id, command, params) {
                     if(module_id!=='message') {
                         console.log(module_id, command, params);
-                        url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/js/message.mp3';
+                        if(module_id=='journal'){
+                            url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/sound/journal.mp3';
+
+                        }
+                       else if(module_id=='pay'){
+                            url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/sound/pay.mp3';
+
+                        }
+                        else{
+                            url = 'https://erperp.ru/<?=SITE_TEMPLATE_PATH?>/sound/message.mp3';
+
+                        }
                         play(url)
                         Swal(
                             command,

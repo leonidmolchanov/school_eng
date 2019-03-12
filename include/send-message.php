@@ -47,10 +47,19 @@ if($PRODUCT_ID = $el->Add($arLoadProductArray))
     $request = 'Success';
 CModule::IncludeModule('pull');
 if(CModule::IncludeModule('pull')) {
+    $dbUser = CUser::GetByID($USER->GetID());
+    $arUser = $dbUser->Fetch();
+    if ($arUser["PERSONAL_PHOTO"]) {
+        $URL = CFile::GetPath($arUser["PERSONAL_PHOTO"]);
+
+    } else {
+        $URL = '/local/templates/school_eng/img/noPhoto.png';
+    }
+    $PROP['avatar'] = 'https://' . SITE_SERVER_NAME . $URL;
     CPullStack::AddByUser(
         $PROP["TO_ID"], Array(
             'module_id' => 'message',
-            'command' => 'check',
+            'command' => $PROP,
             'params' => Array(),
         )
     );

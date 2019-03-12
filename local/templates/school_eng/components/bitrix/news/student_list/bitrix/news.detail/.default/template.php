@@ -149,52 +149,103 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
             }
         endif;
         $adjustmentList = 0;
+
+
         if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'ADJUSTMENT'),
+            false,
+            false,
+            Array('ID','PROPERTY_USERID','PROPERTY_LESSONID', 'NAME', 'PROPERTY_STATUS'
+                )
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+            if ($arResult['ID']==$ar_fields['PROPERTY_USERID_VALUE'] && $ar_fields['PROPERTY_STATUS_VALUE']==0 ) {
+                $adjustmentList++;
+
+
+            }
+
+        }
+        endif;
+
+        if ($ar_fields['PROPERTY_LESSONID_VALUE']):
             # show url my elements
             $my_elements = CIBlockElement::GetList (
                 Array("ID" => "ASC"),
-                Array("IBLOCK_CODE" => 'ADJUSTMENT'),
+                Array("IBLOCK_CODE" => 'LESSON'),
                 false,
                 false,
-                Array()
+                Array('ID', 'NAME')
             );
 
-            while($ar_fields = $my_elements->GetNextElement()) {
-                $fields = $ar_fields->GetFields();
-                $props = $ar_fields->GetProperties();
-                if ($arResult['ID']==$props['USERID']['VALUE']) {
-
-
-                    if (CModule::IncludeModule("iblock")):
-                        # show url my elements
-                        $my_elements = CIBlockElement::GetList (
-                            Array("ID" => "ASC"),
-                            Array("IBLOCK_CODE" => 'LESSON', "ID"=>$props['LESSONID']['VALUE']),
-                            false,
-                            false,
-                            Array('ID', 'NAME')
-                        );
-
-                        while($ar_fields = $my_elements->GetNext())
-                        {
-                            $userLessinName = $ar_fields['NAME'];
-                        }
-                    endif;
-
-
-
-
-                    $arr=Array(
-                        'TYPE'=>3,
-                        'LESSON' => $fields['TIMESTAMP_X'],
-                        'GROUP' => $userLessinName,
-                    );
-                    array_push($userJournal, $arr);
-                    $adjustmentList++;
-                }
+            while($ar_fields2 = $my_elements->GetNext())
+            {
+                $userLessonName = $ar_fields2['NAME'];
 
             }
         endif;
+
+
+
+
+        $arr=Array(
+            'TYPE'=>3,
+            'LESSON' => $fields['TIMESTAMP_X'],
+            'GROUP' => $userLessonName,
+        );
+        array_push($userJournal, $arr);
+//        if (CModule::IncludeModule("iblock")):
+//            # show url my elements
+//            $my_elements = CIBlockElement::GetList (
+//                Array("ID" => "ASC"),
+//                Array("IBLOCK_CODE" => 'ADJUSTMENT'),
+//                false,
+//                false,
+//                Array()
+//            );
+//
+//            while($ar_fields = $my_elements->GetNextElement()) {
+//                $fields = $ar_fields->GetFields();
+//                $props = $ar_fields->GetProperties();
+//                print_r($fields);
+//                if ($arResult['ID']==$props['USERID']['VALUE']) {
+//                    $adjustmentList++;
+//
+//                    if (CModule::IncludeModule("iblock")):
+//                        # show url my elements
+//                        $my_elements = CIBlockElement::GetList (
+//                            Array("ID" => "ASC"),
+//                            Array("IBLOCK_CODE" => 'LESSON', "ID"=>$props['LESSONID']['VALUE']),
+//                            false,
+//                            false,
+//                            Array('ID', 'NAME')
+//                        );
+//
+//                        while($ar_fields = $my_elements->GetNext())
+//                        {
+//                            $userLessinName = $ar_fields['NAME'];
+//
+//                        }
+//                    endif;
+//
+//
+//
+//
+//                    $arr=Array(
+//                        'TYPE'=>3,
+//                        'LESSON' => $fields['TIMESTAMP_X'],
+//                        'GROUP' => $userLessinName,
+//                    );
+//                    array_push($userJournal, $arr);
+//                }
+//
+//            }
+//        endif;
 
 
         function sort_date($a_new, $b_new) {
@@ -517,7 +568,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
         <?
             echo FormatCurrency($arPrice['DISCOUNT_PRICE'], $arPrice['CURRENCY']);
             ?> цена за 8 занятий: <?
-            echo FormatCurrency(($arPrice['PRICE'] *8), $arPrice['CURRENCY']);
+            echo FormatCurrency(($arPrice['DISCOUNT_PRICE'] *8), $arPrice['CURRENCY']);
 ?></span><?
         }
         ?>
