@@ -23,13 +23,14 @@ if(CModule::IncludeModule("iblock"))
     }
 }
 $el = new CIBlockElement;
-
+$PROP['PROPERTY_SCHOOL_ID']= $schoolID;
 $PROP = array();
 $PROP["USERID"] = $_REQUEST["userid"];  // учитель для группы
 $PROP["DATESET"] = date("d.m.Y H:i");  // учитель для группы
 $PROP["STATUS"] = 0;
 $PROP["ALESSONID"] = $_REQUEST["lessonid"];  // учитель для группы
 $PROP["DESCRIPTION"] = $_REQUEST["description"];  // учитель для группы
+$PROP['SCHOOL_ID']=$schoolID;
 
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем

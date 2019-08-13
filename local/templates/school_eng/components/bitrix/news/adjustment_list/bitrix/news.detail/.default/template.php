@@ -74,95 +74,161 @@ $this->setFrameMode(true);
 
                 })
                 length = 0;
+
                 if(filter=='day') {
-                    data.content[0].map(function (row) {
-                        len = 0;
+                    if(!data.content[0]['WEEKEND'] && !data.content[0]['HOLIDAY'])  {
+                        data.content[0].map(function (row) {
+                            len = 0;
+                            if(row["CONTENT"]) {
+                                row["CONTENT"].map(function (item) {
+                                    len++
+                                })
 
-                        row["CONTENT"].map(function (item) {
-                            len++
-                        })
-
-                        if (len > length) {
-                            length = len;
-                        }
-                    });
-                    console.log('len' + len)
-
-                    data.content[0].map(function (row) {
-                        newBodyContent = '<tr role="row" class="odd">'
-                        newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
-                        i = 0;
-                        row["CONTENT"].map(function (lessons) {
-                            color = "ffffff";
-                            data.auditorium.map(function (value) {
-                                if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
-                                    color = value["PROPERTY_COLOR_VALUE"];
+                                if (len > length) {
+                                    length = len;
                                 }
-                            })
-                            console.log('ss'+color)
-                            if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                            }
+                        });
+                        console.log('len' + len)
+
+                        data.content[0].map(function (row) {
+                            newBodyContent = '<tr role="row" class="odd">'
+                            newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                            i = 0;
+
+                            if(row["CONTENT"]) {
+                                row["CONTENT"].map(function (lessons) {
+                                    color = "ffffff";
+                                    data.auditorium.map(function (value) {
+                                        if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                                            color = value["PROPERTY_COLOR_VALUE"];
+                                        }
+                                    })
+                                    console.log(lessons["PROPERTY_REPEAT_VALUE"])
+                                    if (Number(lessons["PROPERTY_REPEAT_VALUE"]) !== 0 && Number(lessons["PROPERTY_SUB_VALUE"]) == 0) {
+                                                            newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                                                        }
+                                                        else {
+                                        lessons['TRIAL']?
+                                            newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                            :
+                                                            newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                                        }
+                                    i++
+                                })
+
+                                if (length - i !== 0) {
+                                    for (var x = 0; x < (length - i); x++)
+                                        newBodyContent += ' <td class=""></td>'
+                                }
+                                newBodyContent += '</tr>';
+                            }
+                            else{
+                                newBodyContent += '<td colspan="'+length+'" class="text-center">Выходной</td></tr>'
 
                             }
-                            else {
-                                newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="'+lessons["PROPERTY_FROM_VALUE"]+'" data-lesson-time-to="'+lessons["PROPERTY_TO_VALUE"]+'" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
-                            }
-                            i++
-                        })
-                        if (length - i !== 0) {
-                            for (var x = 0; x < (length - i); x++)
-                                newBodyContent += ' <td class=""></td>'
-                        }
-                        newBodyContent += '</tr>';
+
+
+                            $("#tblTest tbody").append(newBodyContent);
+                        });
+                    }
+
+
+                    else if(data.content[0]['HOLIDAY']) {
+                        newBodyContent = '<tr role="row" class="odd"><td class="text-center">Праздник</td></tr>'
                         $("#tblTest tbody").append(newBodyContent);
-                    });
+
+                        console.log('Выходной')
+                    }
+
+                    else{
+                        newBodyContent = '<tr role="row" class="odd"><td class="text-center">Выходной</td></tr>'
+                        $("#tblTest tbody").append(newBodyContent);
+
+                        console.log('Выходной')
+                    }
+
                 }
                 else if(filter=='week') {
                     data.content.map(function (block) {
+                        if (!block['WEEKEND'] && !block['HOLIDAY']){
+                            block.map(function (row) {
+                                len = 0;
+                                if(row["CONTENT"]) {
 
-                        block.map(function (row) {
-                            len = 0;
+                                    row["CONTENT"].map(function (item) {
+                                        len++
+                                    })
 
-                            row["CONTENT"].map(function (item) {
-                                len++
-                            })
-
-                            if (len > length) {
-                                length = len;
-                            }
-                        });
+                                    if (len > length) {
+                                        length = len;
+                                    }
+                                }
+                            });
+                        }
                     });
                     z=0;
                     data.content.map(function (block) {
                         newBodyContentFor="";
-                        block.map(function (row) {
-                            newBodyContent = '<tr role="row" class="odd">'
-                            newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
-                            i = 0;
-                            row["CONTENT"].map(function (lessons) {
-                                color = "ffffff";
-                                data.auditorium.map(function (value) {
-                                    if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
-                                        color = value["PROPERTY_COLOR_VALUE"];
+
+
+                        if (!block['WEEKEND'] && !block['HOLIDAY']){
+                            console.log('poincheck')
+                            block.map(function (row) {
+                                newBodyContent = '<tr role="row" class="odd">'
+                                newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                                i = 0;
+
+                                if(row["CONTENT"]) {
+                                    row["CONTENT"].map(function (lessons) {
+                                        color = "ffffff";
+                                        data.auditorium.map(function (value) {
+                                            if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                                                color = value["PROPERTY_COLOR_VALUE"];
+                                            }
+                                        })
+
+                                        if (Number(lessons["PROPERTY_REPEAT_VALUE"]) !== 0 && Number(lessons["PROPERTY_SUB_VALUE"]) == 0) {
+                                            newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                                        }
+                                        else {
+                                            lessons['TRIAL']?
+                                                newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                                :
+                                            newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                        }
+                                        i++
+                                    })
+
+
+                                    if (length - i !== 0) {
+                                        for (var x = 0; x < (length - i); x++)
+                                            newBodyContent += ' <td class=""></td>'
                                     }
-                                })
-                                console.log(color)
-                                if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                    newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                    newBodyContent += '</tr>';
+                                }
+                                else{
+                                    newBodyContent += '<td colspan="'+length+'" class="text-center">Выходной</td></tr>'
 
                                 }
-                                else {
-                                    newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
-                                }
-                                i++
-                            })
-                            if (length - i !== 0) {
-                                for (var x = 0; x < (length - i); x++)
-                                    newBodyContent += ' <td class=""></td>'
-                            }
-                            newBodyContent += '</tr>';
-                            newBodyContentFor+=newBodyContent;
-                        });
+
+                                newBodyContentFor+=newBodyContent;
+                            });
+                        }
+
+                        else if(block['HOLIDAY']) {
+                            newBodyContentFor = '<tr role="row" class="odd"><td colspan="'+length+1+'" class="text-center">Праздник</td></tr>'
+
+                        }
+                        else{
+                            newBodyContentFor = '<tr role="row" class="odd"><td colspan="'+length+1+'" class="text-center">Выходной</td></tr>'
+
+                            console.log('Выходной 2')
+                        }
+
+
                         $("#tblTest tbody").append('<tr><td colspan="'+length+1+'"><strong>'+moment().add('days', (navigate+z)).format('dddd YYYY-MM-DD')+'</strong></td></tr>');
                         $("#tblTest tbody").append(newBodyContentFor);
                         z++;
@@ -170,6 +236,108 @@ $this->setFrameMode(true);
 
 
                 }
+
+
+                // if(filter=='day') {
+                //     if(!data.content[0]['WEEKEND'] && !data.content[0]['HOLIDAY']) {
+                //
+                //         data.content[0].map(function (row) {
+                //             len = 0;
+                //             if(row["CONTENT"]) {
+                //                 row["CONTENT"].map(function (item) {
+                //                     len++
+                //                 })
+                //
+                //                 if (len > length) {
+                //                     length = len;
+                //                 }
+                //             }
+                //         });
+                //         console.log('len' + len)
+                //
+                //         data.content[0].map(function (row) {
+                //             newBodyContent = '<tr role="row" class="odd">'
+                //             newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                //             i = 0;
+                //             row["CONTENT"].map(function (lessons) {
+                //                 color = "ffffff";
+                //                 data.auditorium.map(function (value) {
+                //                     if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                //                         color = value["PROPERTY_COLOR_VALUE"];
+                //                     }
+                //                 })
+                //                 console.log('ss' + color)
+                //                 if (Number(lessons["PROPERTY_REPEAT_VALUE"]) !== 0) {
+                //                     newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                //
+                //                 }
+                //                 else {
+                //                     newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                //                 }
+                //                 i++
+                //             })
+                //             if (length - i !== 0) {
+                //                 for (var x = 0; x < (length - i); x++)
+                //                     newBodyContent += ' <td class=""></td>'
+                //             }
+                //             newBodyContent += '</tr>';
+                //             $("#tblTest tbody").append(newBodyContent);
+                //         });
+                //     }
+                // }
+                // else if(filter=='week') {
+                //     data.content.map(function (block) {
+                //
+                //         block.map(function (row) {
+                //             len = 0;
+                //
+                //             row["CONTENT"].map(function (item) {
+                //                 len++
+                //             })
+                //
+                //             if (len > length) {
+                //                 length = len;
+                //             }
+                //         });
+                //     });
+                //     z=0;
+                //     data.content.map(function (block) {
+                //         newBodyContentFor="";
+                //         block.map(function (row) {
+                //             newBodyContent = '<tr role="row" class="odd">'
+                //             newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                //             i = 0;
+                //             row["CONTENT"].map(function (lessons) {
+                //                 color = "ffffff";
+                //                 data.auditorium.map(function (value) {
+                //                     if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                //                         color = value["PROPERTY_COLOR_VALUE"];
+                //                     }
+                //                 })
+                //                 console.log(color)
+                //                 if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
+                //                     newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                //
+                //                 }
+                //                 else {
+                //                     newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-id="' + lessons["ID"] + '" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                //                 }
+                //                 i++
+                //             })
+                //             if (length - i !== 0) {
+                //                 for (var x = 0; x < (length - i); x++)
+                //                     newBodyContent += ' <td class=""></td>'
+                //             }
+                //             newBodyContent += '</tr>';
+                //             newBodyContentFor+=newBodyContent;
+                //         });
+                //         $("#tblTest tbody").append('<tr><td colspan="'+length+1+'"><strong>'+moment().add('days', (navigate+z)).format('dddd YYYY-MM-DD')+'</strong></td></tr>');
+                //         $("#tblTest tbody").append(newBodyContentFor);
+                //         z++;
+                //     });
+                //
+                //
+                // }
 
             },
             onfailure: function () {

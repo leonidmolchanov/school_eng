@@ -283,7 +283,14 @@ console.log(obj)
                 be: JSON.stringify(obj.be),
                 notbe: JSON.stringify(obj.notbe),
                 disease: JSON.stringify(obj.disease),
-                adj: JSON.stringify(obj.adj)
+                adj: JSON.stringify(obj.adj),
+                sub: <?
+                if($arResult["DISPLAY_PROPERTIES"]["SUB"]["DISPLAY_VALUE"]):
+                echo $arResult["DISPLAY_PROPERTIES"]["SUB"]["DISPLAY_VALUE"];
+                else:
+                echo '0';
+                endif;
+                ?>
             },
             method: 'POST',
             dataType: 'json',

@@ -57,6 +57,7 @@ if (intval($ID) > 0):
     $el = new CIBlockElement;
 
     $PROP = array();
+    $PROP['SCHOOL_ID']=$schoolID;
     $PROP["NAME"] = $_REQUEST["name"];
     $PROP["LAST_NAME"] = $_REQUEST["lastName"];
     $PROP["SECOND_NAME"] = $_REQUEST["secondName"];
@@ -72,10 +73,22 @@ if (intval($ID) > 0):
         "ACTIVE"         => "Y"
     );
 
-    if($PRODUCT_ID = $el->Add($arLoadProductArray))
-        $request = 'Success';
-    else
+    if($PRODUCT_ID = $el->Add($arLoadProductArray)){
+
+        $user = new CUser;
+        $fields = Array(
+            "UF_SCHOOL_ID"          => $schoolID,
+        );
+        $user->Update($ID, $fields);
+        $strError .= $user->LAST_ERROR;
+        if($strError) {
+            $request = 'Error';
+        }
+        else{
+            $request = 'Success';}}
+    else {
         $request = 'Error';
+    }
 
 
 

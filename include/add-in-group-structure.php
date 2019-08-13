@@ -28,7 +28,10 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID'], "PROPERTY_STUDENT_ID" => $_REQUEST['studentID']),
+        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE',
+            "PROPERTY_GROUP_ID" => $_REQUEST['groupID'],
+            "PROPERTY_STUDENT_ID" => $_REQUEST['studentID'],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID')
@@ -45,6 +48,7 @@ $el = new CIBlockElement;
 $PROP = array();
 $PROP["STUDENT_ID"] = $_REQUEST["studentID"];
 $PROP["GROUP_ID"] = $_REQUEST["groupID"];
+$PROP['SCHOOL_ID']=$schoolID;
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

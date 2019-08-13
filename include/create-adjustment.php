@@ -24,7 +24,7 @@ $PROP["DATESET"] = date("d.m.Y H:i");  // учитель для группы
 $PROP["STATUS"] = 0;
 $PROP["ALESSONID"] = $_REQUEST["lessonid"];  // учитель для группы
 $PROP["DESCRIPTION"] = $_REQUEST["description"];  // учитель для группы
-
+$PROP['SCHOOL_ID']=$schoolID;
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

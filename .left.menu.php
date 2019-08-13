@@ -2,38 +2,59 @@
 $aMenuLinks = Array(
 	Array(
 		"Расписание", 
-		"/schedule.php",
+		"/schedule.php", 
 		Array(), 
-		Array(), 
+		Array("label"=>"calendar"), 
 		"CSite::InGroup(array(1,8,9))" 
 	),
-    Array(
-        "Управление",
-        "/control/",
-        Array(),
-        Array(),
-        ""
-    ),
+	Array(
+		"Управление", 
+		"/control/", 
+		Array(), 
+		Array("label"=>"pencil"), 
+		"" 
+	),
+	Array(
+		"Журналы", 
+		"/journal.php", 
+		Array(), 
+		Array("label"=>"calendar"), 
+		"" 
+	),
 	Array(
 		"Карточка студента", 
 		"student-card.php", 
 		Array(), 
+		Array("label"=>"book"), 
+		"CSite::InGroup(array(1,9,18))"
+	),
+	Array(
+		"Отработки", 
+		"/adjustment.php", 
 		Array(), 
-		"CSite::InGroup(array(1,9))" 
+		Array("label"=>"book"), 
+		"" 
 	),
 	Array(
 		"Личный кабинет", 
 		"/profile/", 
+		Array(), 
+		Array("label"=>"user"), 
+		"" 
+	),
+	Array(
+		"О нас", 
+		"/about/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Выход", 
-		"", 
+		"/login/index.php?logout=yes", 
 		Array(), 
-		Array(), 
+		Array("label"=>"sign-in"), 
 		"" 
-	),
+	)
 );
 ?>

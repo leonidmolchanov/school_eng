@@ -11,8 +11,35 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+require($_SERVER["DOCUMENT_ROOT"]."/local/include/school_id.php");
+
 ?>
 <?
+
+if($_REQUEST['type']=='active'){
+    $result = [];
+    foreach($arResult["ITEMS"] as $arItem):
+            $studentCount++;
+        if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']!=='0'){
+          array_push($result, $arItem);
+        }
+        endforeach;
+    $arResult["ITEMS"]=$result;
+
+}
+
+if($_REQUEST['type']=='passive'){
+    $result = [];
+    foreach($arResult["ITEMS"] as $arItem):
+        $studentCount++;
+        if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']=='0'){
+            array_push($result, $arItem);
+        }
+    endforeach;
+    $arResult["ITEMS"]=$result;
+
+}
+
 $userBalance=[];
 $userGroup=[];
 $userStructure=[];
@@ -37,7 +64,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP'),
+        Array("IBLOCK_CODE" => 'GROUP',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_TEACHER')
@@ -53,7 +81,8 @@ if (CModule::IncludeModule("iblock")):
 # show url my elements
 $my_elements = CIBlockElement::GetList (
     Array("ID" => "ASC"),
-    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID']),
+    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID'],
+        'PROPERTY_SCHOOL_ID'=>$schoolID),
     false,
     false,
     Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -66,10 +95,10 @@ while($ar_fields = $my_elements->GetNext())
 endif;
 ?>
 
-<div class="checkbox">
-    <label for="example-checkbox1">
-        <input  type="checkbox" id="filter_checkbox"> Показать всех                            </label>
-</div>
+<!--<div class="checkbox">-->
+<!--    <label for="example-checkbox1">-->
+<!--        <input  type="checkbox" id="filter_checkbox"> Показать всех                            </label>-->
+<!--</div>-->
 
 <div id="example-datatables_wrapper" class="">
     <table id="user_table" class="table table-striped table-bordered table-hover dataTable no-footer" role="grid" aria-describedby="example-datatables2_info">
@@ -101,6 +130,9 @@ endif;
         $studentLowBalance=0;
         $studentBlock=0;?>
         <?foreach($arResult["ITEMS"] as $arItem):
+            if($schoolID && $schoolID!=$arItem["DISPLAY_PROPERTIES"]["SCHOOL_ID"]["DISPLAY_VALUE"]):
+                continue;
+            endif;
             $studentCount++;
         if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']=='0'){
             $studentBlock++;
@@ -177,11 +209,11 @@ endif;
         });
     });
 
-    document.querySelector('#filter_checkbox').addEventListener('click', function (evt) {
-       elem =  $('#user_table tbody tr')
-        console.log(elem)
-
-
-    })
+    // document.querySelector('#filter_checkbox').addEventListener('click', function (evt) {
+    //    elem =  $('#user_table tbody tr')
+    //     console.log(elem)
+    //
+    //
+    // })
 </script>
 

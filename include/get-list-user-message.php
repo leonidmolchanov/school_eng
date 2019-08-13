@@ -40,12 +40,63 @@ while ($arUser = $rsUsers->Fetch()) {
     }
 }
 $usersList=[];
+
+
+
+
+if($_REQUEST['group']):
+
+    $structure=[];
+
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID'],
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
+            false,
+            false,
+            Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+            array_push($structure, $ar_fields['PROPERTY_STUDENT_ID_VALUE']);
+        }
+
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
+            false,
+            false,
+            Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_USERID')
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+
+            if($ar_fields['PROPERTY_STATUS_VALUE']!==0){
+                array_push($usersList, Array('ID'=>$ar_fields['PROPERTY_USERID_VALUE'],
+                    'NAME'=>$ar_fields['PROPERTY_NAME_VALUE'],
+                    'LAST_NAME'=>$ar_fields['PROPERTY_LAST_NAME_VALUE'],
+                    'AVATAR'  => $users[$ar_fields['PROPERTY_USERID_VALUE']],
+                    'DESCRIPTION'=>'Студент'));
+            }        }
+
+    endif;
+
+    echo json_encode($usersList);
+
+ else:
+
 if($privilege==2):
 if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'STUDENTS'),
+        Array("IBLOCK_CODE" => 'STUDENTS',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_STATUS', 'PROPERTY_USERID')
@@ -67,7 +118,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'METHODIST'),
+        Array("IBLOCK_CODE" => 'METHODIST',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_USER','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')
@@ -89,7 +141,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'TEACHER'),
+        Array("IBLOCK_CODE" => 'TEACHER',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_USER','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')
@@ -113,7 +166,8 @@ if($privilege==3):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'METHODIST'),
+            Array("IBLOCK_CODE" => 'METHODIST',
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_USER','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')
@@ -136,7 +190,8 @@ if($privilege==3):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'GROUP', "PROPERTY_TEACHER" => $USER->GetID()),
+            Array("IBLOCK_CODE" => 'GROUP', "PROPERTY_TEACHER" => $USER->GetID(),
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_TEACHER')
@@ -155,7 +210,8 @@ $studentArr=[];
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $groupID),
+            Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $groupID,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -172,7 +228,8 @@ $studentArr=[];
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'STUDENTS', 'ID'=>$studentArr),
+            Array("IBLOCK_CODE" => 'STUDENTS', 'ID'=>$studentArr,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_STATUS', 'PROPERTY_USERID')
@@ -197,7 +254,8 @@ if($privilege==4):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'METHODIST'),
+            Array("IBLOCK_CODE" => 'METHODIST',
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_USER','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')
@@ -221,7 +279,8 @@ if($privilege==4):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'STUDENTS', 'PROPERTY_USERID'=>$USER->GetID()),
+            Array("IBLOCK_CODE" => 'STUDENTS', 'PROPERTY_USERID'=>$USER->GetID(),
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID')
@@ -239,7 +298,8 @@ if($privilege==4):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_STUDENT_ID" => $studentID),
+            Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_STUDENT_ID" => $studentID,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -256,7 +316,8 @@ if($privilege==4):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'GROUP', "ID" => $groupID),
+            Array("IBLOCK_CODE" => 'GROUP', "ID" => $groupID,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_TEACHER')
@@ -273,7 +334,8 @@ if($privilege==4):
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'TEACHER', 'ID'=> $teacherID),
+            Array("IBLOCK_CODE" => 'TEACHER', 'ID'=> $teacherID,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_USER','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')
@@ -294,4 +356,9 @@ if($privilege==4):
 
     endif;
 echo json_encode($usersList);
+
+
+
+
+endif;
 ?>

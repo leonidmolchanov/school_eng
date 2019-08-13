@@ -14,7 +14,8 @@ function lessonP($id, $val, $type){
         # show url my elements
         $my_elements = CIBlockElement::GetList (
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'STUDENTS', "PROPERTY_USERID"=>$id),
+            Array("IBLOCK_CODE" => 'STUDENTS', "PROPERTY_USERID"=>$id,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_LESSON_BALANCE','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')

@@ -11,7 +11,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID']),
+        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID'],
+        'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -24,7 +25,8 @@ if (CModule::IncludeModule("iblock")):
 
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure),
+        Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure,
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME')

@@ -81,11 +81,11 @@ endif;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" onClick="editPopup('close')" data-dismiss="modal">×</button>
-                    <h4>Назначение отработки</h4>
+                    <h4>Назначение платежа</h4>
                 </div>
                 <div class="modal-body">
                     <form action="page_form_components.html" method="post" class="form-horizontal form-box" onsubmit="return false;">                         <!-- Timepicker for Bootstrap (classes are initialized in js/main.js -> uiInit()), for extra usage examples you can check out http://jdewit.github.io/bootstrap-timepicker/ -->
-                        <div class="form-group">
+                        <div class="form-group payTypeMoney">
                             <div class="col-md-8">
                                 <label class="control-label col-md-6" for="example-input-datepicker">Cумма:</label>
                                 <div class="input-group bootstrap-timepicker">
@@ -93,7 +93,7 @@ endif;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group payTypeLesson">
                             <div class="col-md-8">
                                 <label class="control-label col-md-6" for="example-input-datepicker">Кол-во уроков:</label>
                                 <div class="input-group bootstrap-timepicker">
@@ -110,6 +110,13 @@ endif;
                                     <textarea id="transaction-description"  class="form-control" rows="3"></textarea>                            </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-md-8">
+                                <label class="control-label col-md-6" for="example-input-datepicker">Рублевый счет:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input class="payType_checkbox" class="form-control" type="checkbox"  name="payType">
+                          </div>
+                        </div>
                 </div>
                 <input type="hidden" id="edit-idLesson">
                 </form>
@@ -122,7 +129,20 @@ endif;
         <!-- END Modal Content -->
     </div>
     <script>
+        document.querySelector('.payTypeMoney').style.display='none'
+        payType = document.querySelector('.payType_checkbox');
+payType.addEventListener('click', ()=>{
+if(payType.checked){
+    document.querySelector('.payTypeMoney').style.display='block'
+    document.querySelector('.payTypeLesson').style.display='none'
 
+}
+else{
+    document.querySelector('.payTypeMoney').style.display='none'
+    document.querySelector('.payTypeLesson').style.display='block'
+
+}
+})
         function createPayment() {
 sum = $("#transaction-amount").val().replace(/,/, '.').replace(' ', '')
             console.log(Number(<?=$arResult["ID"]?>))
@@ -133,12 +153,11 @@ sum = $("#transaction-amount").val().replace(/,/, '.').replace(' ', '')
                     sessid: BX.bitrix_sessid(),
                     type: 'createPayment',
                     debit: 'Y',
-                    amount: sum,
+                    amount: payType.checked ? sum : 0,
                     comments: $("#transaction-description").val(),
-                    lessonBalance: Number($("#transaction-lesson").val()),
+                    lessonBalance: payType.checked ? 0 : Number($("#transaction-lesson").val()),
                     userid: $("#transaction-userid").val(),
-                    transactionid: Number(<?=$arResult["ID"]?>)
-
+                    transactionid: Number(<?=$arResult["ID"]?>),
                 },
                 method: 'POST',
                 dataType: 'json',

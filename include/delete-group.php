@@ -13,7 +13,8 @@ if (CModule::IncludeModule("iblock")):
     $my_elements = CIBlockElement::GetList(
         Array("ID" => "ASC"),
         Array("IBLOCK_CODE" => 'GROUP_STRUCTURE',
-            "PROPERTY_GROUP_ID" => $_REQUEST["idGroup"]),
+            "PROPERTY_GROUP_ID" => $_REQUEST["idGroup"],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_STUDENT_ID')

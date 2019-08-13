@@ -17,7 +17,7 @@ if (CModule::IncludeModule("iblock")):
             '<=DATE_CREATE' => $dateEND,),
         false,
         false,
-        Array('ID', 'NAME', 'PROPERTY_DISEASE', 'PROPERTY_LESSONID')
+        Array('ID', 'NAME', 'PROPERTY_DISEASE', 'PROPERTY_SCHOOL_ID','PROPERTY_LESSONID')
     );
 
     while ($ar_fields = $my_elements->GetNext()) {
@@ -29,7 +29,8 @@ if (CModule::IncludeModule("iblock")):
 
             }
             else {
-                array_push($adjustment, Array('USERID'=>$ar_fields['PROPERTY_DISEASE_VALUE'], 'LESSONID'=>$ar_fields['PROPERTY_LESSONID_VALUE']));
+                array_push($adjustment, Array('USERID'=>$ar_fields['PROPERTY_DISEASE_VALUE'], 'LESSONID'=>$ar_fields['PROPERTY_LESSONID_VALUE'],
+                   'PROPERTY_SCHOOL_ID'=> $ar_fields['PROPERTY_SCHOOL_ID_VALUE']));
             }
         }
     }
@@ -58,6 +59,7 @@ foreach ($adjustment as $item) {
     $el = new CIBlockElement;
 
     $PROP = array();
+    $PROP['PROPERTY_SCHOOL_ID']=$item['PROPERTY_SCHOOL_ID'];
     $PROP["USERID"] = $item["USERID"];  // учитель для группы
     $PROP["LESSONID"] = $item["LESSONID"];  // учитель для группы
     $PROP["STATUS"] = 3;

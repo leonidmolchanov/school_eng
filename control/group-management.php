@@ -78,18 +78,25 @@ function confrimChange(item, change) {
     nameGroup = item.querySelector('input[name="name"]')
     teacherGroup = item.querySelector('select[name="teacher"]')
    costGroup = item.querySelector('select[name="cost"]')
+    lengthGroup = item.querySelector('input[name="length"]')
+    placeGroup = item.querySelector('input[name="place"]')
+
     buttonGroup = item.querySelector('input[name="buttonWrite"]')
     console.log(buttonGroup.dataset.id)
 buttonGroup.value = "Сохранить";
     nameGroup.disabled=false;
     teacherGroup.disabled=false;
     costGroup.disabled=false;
+    lengthGroup.disabled = false;
+    placeGroup.disabled = false;
 if(buttonGroup.dataset.confrim=='true'){
     request={
         id: buttonGroup.dataset.id,
         name: nameGroup.value,
         lesson: $(costGroup).find('option:selected').attr('data-lesson'),
-        teacher:$(teacherGroup).find('option:selected').attr('data-user-id')
+        teacher:$(teacherGroup).find('option:selected').attr('data-user-id'),
+        lengthI: lengthGroup.value,
+        placeI: placeGroup.value
     }
     console.log(buttonGroup.dataset.id)
 
@@ -100,7 +107,9 @@ if(buttonGroup.dataset.confrim=='true'){
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Изменить'
+        confirmButtonText: 'Изменить',
+        cancelButtonText: 'Отмена'
+
     }).then((result) => {
         if (result.value) {
             changeGroup(request)
@@ -164,7 +173,7 @@ if(buttonGroup.dataset.confrim=='true'){
                         }
                     })
                     newContent = ' <div class="form-group">\n' +
-                        '                <div class="col-md-3">\n' +
+                        '                <div class="col-md-2">\n' +
                         '<input type="radio" onclick="confrimWrite(this)" name="radios" value="write">'+
                         '</label>'+
                         '                <label class="control-label" for="example-input-small"><strong>Имя группы:</strong></label>\n' +
@@ -178,6 +187,18 @@ if(buttonGroup.dataset.confrim=='true'){
                         '                <div class="col-md-2">\n' +
                         '                    <label class="control-label " for="example-input-small"><strong>Стоимость:</strong></label>\n' +
                         '                    <select disabled name="cost" class="form-control input-sm">'+costGroupArr+'</select>\n' +
+                        '                </div>\n' +
+                        '\n' +
+                        '\n' +
+                        '                <div class="col-md-1">\n' +
+                        '                    <label class="control-label " for="example-input-small"><strong>Длинна:</strong></label>\n' +
+                        '                    <input type="number" name="length"  class="form-control input-sm" value = "'+row["PROPERTY_LENGTH_VALUE"]+'" disabled>\n' +
+                        '                </div>\n' +
+                        '\n' +
+                        '\n' +
+                        '                <div class="col-md-1">\n' +
+                        '                    <label class="control-label " for="example-input-small"><strong>Мест:</strong></label>\n' +
+                        '                    <input type="number" name="place"  class="form-control input-sm" value = "'+row["PROPERTY_PLACE_VALUE"]+'" disabled>\n' +
                         '                </div>\n' +
                         '\n' +
                         '                <div class="col-md-2">\n' +
@@ -213,6 +234,8 @@ function changeGroup(arr) {
             nameGroup: arr.name,
             teacherGroup: Number(arr.teacher),
             lessoncost: Number(arr.lesson),
+            length: arr.lengthI,
+            place: arr.placeI,
             id: Number(arr.id)
         },
         method: 'POST',

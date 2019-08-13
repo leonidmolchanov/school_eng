@@ -4,18 +4,27 @@
  * @var array $arParams
  * @var array $arResult
  */
+use Bitrix\Main\Grid\Declension;
+$rsUser = CUser::GetByID($USER->GetID());
+$arUser = $rsUser->Fetch();
+global $schoolID;
+$schoolID =  $arUser['UF_SCHOOL_ID'];
 // Определение групп пользователей
 $isAdmin=1;
 $isMethodist=9;
 $isTeacher=8;
 $isStudent=7;
+$isFranch=17;
+$isAdministrator=18;
+
+$isAdminPortal = 16;
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 	die();
 global $USER;
 $privilege=0;
 $arGroups = $USER->GetUserGroupArray();
 foreach ($arGroups as $state){
-    if($state==$isAdmin){
+    if($state==$isAdmin || $state==$isAdminPortal){
         $privilege=1;
     }
     else if($state==$isMethodist){
@@ -27,17 +36,984 @@ foreach ($arGroups as $state){
     else if($state==$isStudent){
         $privilege=4;
     }
+    else if($state==$isFranch){
+        $privilege=5;
+    }
+    else if($state==$isAdministrator){
+        $privilege=6;
+    }
 }
     ?>
     <!-- Profile -->
     <h3 class="page-header page-header-top"><i class="fa fa-user"></i> <?=$arResult["arUser"]["NAME"]?> <?=$arResult["arUser"]["SECOND_NAME"]?> <?=$arResult["arUser"]["LAST_NAME"]?>  <small><?=$arResult["arUser"]["LOGIN"]?></small></h3>
-<?if($privilege===1){?>
-Вы администратор
+<?if($privilege===1 || $privilege==5){?>
+
+    <?
+
+$franchuUserArr=[];
+    $filter = Array
+    (
+        "GROUPS_ID"           => Array(17)
+    );
+    $rsUsers = CUser::GetList(($by = "NAME"), ($order = "desc"), $filter);
+    while ($arUser = $rsUsers->Fetch()) {
+        array_push($franchuUserArr, Array('ID'=>$arUser['ID'],'NAME'=>$arUser['NAME'],'LAST_NAME'=>$arUser['LAST_NAME']));
+    }
+if($privilege==5) {
+    $filter = Array("IBLOCK_CODE" => 'SCHOOL',
+        'ID' => $schoolID);
+}
+else{
+    $filter = Array("IBLOCK_CODE" => 'SCHOOL');
+}
+    $schoolArr=[];
+    $schoolArrCount = 0;
+    $schoolArrFCount=0;
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            $filter,
+            false,
+            false,
+            Array('ID','NAME',
+                'PROPERTY_ADDRESS',
+                'PROPERTY_PHONE',
+                'PROPERTY_EMAIL',
+                'PROPERTY_MASTER_FIO',
+                'PROPERTY_MASTER_PHONE',
+                'PROPERTY_MASTER_EMAIL',
+                'PROPERTY_MASTER_ID',
+                'PROPERTY_BLOCK')
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+          array_push($schoolArr, $ar_fields);
+          if($ar_fields['PROPERTY_MASTER_ID_VALUE']=='false'){
+              $schoolArrCount++;
+          }
+          else{
+              $schoolArrFCount++;
+          }
+        }
+    endif;
+
+
+    $yearDeclension = new Declension('Филиал', 'Филиала', 'Филиалов');
+    ?>
+<? if($privilege==1):?>
+<div class="row">
+
+    <div class="text-left" style="margin-left: 20px;">
+        <h4>
+        <? echo $schoolArrCount. ' ';?>
+<?=$yearDeclension->get($schoolArrCount);?>
+        </h4>
+    </div>
+    <div class="row">
+        <div class="text-right" style="margin-right: 50px;">
+            <button class="btn btn-default"
+                    id="taggleButton"
+                    data-placement="top"><i id='arrowIcon' class="fa fa-arrow-down"></i>
+            </button>
+            <?if($privilege!==5):?>
+                <a class="btn btn-success" onclick="showCreateSchoolPopup()" id="addSchool"><i class="gemicon-small-plus gemicon-small-white"></i></a>
+
+            <?endif;?>
+
+        </div>
+    </div>
+    <div id="tableMini">
+
+    <?
+    foreach ($schoolArr as $item):
+        if($item['PROPERTY_MASTER_ID_VALUE']=='false'):
+
+        ?>
+    <div class="col-md-4" style="margin-bottom: 20px;">
+
+        <table id="tableMini" class="table table-striped table-bordered table-hover dataTable no-footer">
+            <thead>
+            </thead>
+            <tbody>
+            <tr role="row" class="odd">
+                <td>
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <a class="btn btn-primary"  onclick="changeSchoolConfrim(<?=$item['ID']?>)" id="addSchool"><i class="gemicon-small-key gemicon-small-white"></i></a>
+                        </div>
+                        <div class="col-md-8">
+                            <strong>Наименование школы: </strong>
+                        </div>
+                    </div>
+
+                </td>
+                <td>
+                    <input type="text" value="<?=$item['NAME']?>" id="schoolName" name="example-advanced-firstname" class="form-control ui-wizard-content" disabled="">
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <?
+    endif;
+    endforeach;
+    ?>
+    </div>
+    <div id="tableMax" style="display: none;">
+    <?
+    foreach ($schoolArr as $item):
+    if($item['PROPERTY_MASTER_ID_VALUE']=='false'):
+    ?>
+    <div class="col-md-4"  style="margin-bottom: 20px;">
+
+        <table  class="table table-striped table-bordered table-hover dataTable no-footer">
+            <thead>
+            </thead>
+            <tbody>
+            <tr role="row" class="odd">
+                <td>
+                    <div class="row">
+
+                    <div class="col-md-2">
+                    <a class="btn btn-primary"  onclick="changeSchoolConfrim(<?=$item['ID']?>)" id="addSchool"><i class="gemicon-small-key gemicon-small-white"></i></a>
+                    </div>
+                        <div class="col-md-2">
+                            <a class="btn btn-warning"  onclick="editSchool(this.parentNode.parentNode.parentNode.parentNode.parentNode)" id="addSchool"><i class="gemicon-small-pen gemicon-small-white"></i></a>
+                        </div>
+                    <div class="col-md-8">
+                    <strong>Наименование школы: </strong>
+                    </div>
+                    </div>
+
+                </td>
+                <td>
+                    <input type="text" value="<?=$item['NAME']?>" name="schoolName"  class="form-control ui-wizard-content" disabled="">
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>Адрес школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_ADDRESS_VALUE']?>" name="schoolAddress"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>Телефон школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_PHONE_VALUE']?>" name="schoolPhone"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>E-mail школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_EMAIL_VALUE']?>" name="schoolEmail"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td colspan="2" class="visib">
+                    <strong>Контактные данные владельца школы:</strong>
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>ФИО владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_FIO_VALUE']?>" name="schoolFioPerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>Телефон владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_PHONE_VALUE']?>" name="schoolPhonePerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>E-mail владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_EMAIL_VALUE']?>" name="schoolEmailPerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+        <?if($privilege!==5):?>
+
+        <tr role="row" class="odd">
+            <td class="visib">
+                <div class="text-right">
+                    <button class="btn btn-danger" onClick="deleteSchoolConfrim(<?=$item['ID']?>)">Удалить</button>
+
+                    <?if($item['PROPERTY_BLOCK_VALUE']==1):?>
+                        <button class="btn btn-success" onClick="blockSchool(<?=$item['ID']?>, false)">Разблокировать</button>
+
+                    <?else:?>
+                        <button class="btn btn-warning" onClick="blockSchool(<?=$item['ID']?>, true)">Заблокировать</button>
+
+                    <?endif;?>
+                </div>
+            </td>
+            <td class="visib">
+                <div class="text-right">
+                    <button class="btn btn-success editButton"  disabled onClick="editSchoolProc(<?=$item['ID']?>, this.parentNode.parentNode.parentNode.parentNode)">Редактировать</button>
+
+                </div>
+            </td>
+        </tr>
+        <?endif;?>
+            </tbody>
+        </table>
+
+    </div>
+    <?
+    endif;
+    endforeach;
+        ?>
+
+</div>
+</div>
+    <?endif;?>
+        <div class="row">
+
+        <div class="text-center">
+            <h3>
+            Франчайзинговая сеть
+            </h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="text-right" style="margin-right: 50px;">
+                <button class="btn btn-default"
+                        id="taggleButton2"
+                        data-placement="top"><i id='arrowIcon2' class="fa fa-arrow-down"></i>
+                </button>
+
+            </div>
+        </div>
+        <div class="text-left" style="margin-left: 20px;">
+            <h4>
+                <? echo $schoolArrFCount. ' ';?>
+                <?=$yearDeclension->get($schoolArrFCount);?>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+
+    <div id="tableMini2">
+
+        <?
+        foreach ($schoolArr as $item):
+        if($item['PROPERTY_MASTER_ID_VALUE']!='false'):
+
+        ?>
+            <div class="col-md-4" style="margin-bottom: 20px;">
+
+                <table  class="table table-striped table-bordered table-hover dataTable no-footer">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    <tr role="row" class="odd">
+                        <td>
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <a class="btn btn-primary"  onclick="changeSchoolConfrim(<?=$item['ID']?>)" id="addSchool"><i class="gemicon-small-key gemicon-small-white"></i></a>
+                                </div>
+                                <div class="col-md-8">
+                                    <strong>Наименование школы: </strong>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+                            <input type="text" value="<?=$item['NAME']?>" id="schoolName" name="example-advanced-firstname" class="form-control ui-wizard-content" disabled="">
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        <?
+        endif;
+        endforeach;
+        ?>
+    </div>
+    </div>
+<div class="row">
+
+<div id="tableMax2" style="display: none;">
+            <?
+            foreach ($schoolArr as $item):
+            if($item['PROPERTY_MASTER_ID_VALUE']!='false'):
+            ?>
+            <div class="col-md-4"  style="margin-bottom: 20px;">
+
+                <table  class="table table-striped table-bordered table-hover dataTable no-footer">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    <tr role="row" class="odd">
+                        <td>
+                            <div class="row">
+
+                                <div class="col-md-2">
+                                    <a class="btn btn-primary"  onclick="changeSchoolConfrim(<?=$item['ID']?>)" id="addSchool"><i class="gemicon-small-key gemicon-small-white"></i></a>
+                                </div>
+                                <div class="col-md-2">
+                                    <a class="btn btn-warning"  onclick="editSchool(this.parentNode.parentNode.parentNode.parentNode.parentNode)" id="addSchool"><i class="gemicon-small-pen gemicon-small-white"></i></a>
+                                </div>
+                                <div class="col-md-8">
+                                    <strong>Наименование школы: </strong>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+                            <input type="text" value="<?=$item['NAME']?>" name="schoolName"  class="form-control ui-wizard-content" disabled="">
+
+                        </td>
+                    </tr>
+                    <tr role="row" class="odd">
+                        <td class="visib">
+                            <strong>Адрес школы:</strong>
+                        </td>
+                        <td class="visib">
+                            <input type="text" value="<?=$item['PROPERTY_ADDRESS_VALUE']?>" name="schoolAddress"  class="form-control ui-wizard-content" disabled="">
+
+
+                        </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>Телефон школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_PHONE_VALUE']?>" name="schoolPhone"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>E-mail школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_EMAIL_VALUE']?>" name="schoolEmail"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td colspan="2" class="visib">
+                    <strong>Контактные данные владельца школы:</strong>
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>ФИО владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_FIO_VALUE']?>" name="schoolFioPerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>Телефон владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_PHONE_VALUE']?>" name="schoolPhonePerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <tr role="row" class="odd">
+                <td class="visib">
+                    <strong>E-mail владельца школы:</strong>
+                </td>
+                <td class="visib">
+                    <input type="text" value="<?=$item['PROPERTY_MASTER_EMAIL_VALUE']?>" name="schoolEmailPerson"  class="form-control ui-wizard-content" disabled="">
+
+
+                </td>
+            </tr>
+            <?if($privilege!==5):?>
+
+                <tr role="row" class="odd">
+                    <td class="visib">
+                        <div class="text-right">
+                            <button class="btn btn-danger" onClick="deleteSchoolConfrim(<?=$item['ID']?>)">Удалить</button>
+
+                            <?if($item['PROPERTY_BLOCK_VALUE']==1):?>
+                                <button class="btn btn-success" onClick="blockSchool(<?=$item['ID']?>, false)">Разблокировать</button>
+
+                            <?else:?>
+                                <button class="btn btn-warning" onClick="blockSchool(<?=$item['ID']?>, true)">Заблокировать</button>
+
+                            <?endif;?>
+                        </div>
+                    </td>
+                    <td class="visib">
+                        <div class="text-right">
+                            <button class="btn btn-success editButton"  disabled onClick="editSchoolProc(<?=$item['ID']?>, this.parentNode.parentNode.parentNode.parentNode)">Редактировать</button>
+
+                        </div>
+                    </td>
+                </tr>
+            <?endif;?>
+            </tbody>
+            </table>
+
+        </div>
+    <?
+    endif;
+    endforeach;
+    ?>
+
+    </div>
+</div>
+
+
+    <div id="addSchool-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;">
+
+        <div class="modal-backdrop  in" style="height: 833px;"></div>
+        <!-- Modal Dialog -->
+        <div class="modal-dialog">
+            <!-- Modal Content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="hideCreateSchoolPopup()" data-dismiss="modal">×</button>
+                    <h4>Создание школы</h4>
+                </div>
+                <div class="modal-body">
+
+
+
+                    <table class="table table-striped table-bordered table-hover dataTable no-footer">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        <tr role="row" class="odd">
+                            <td colspan="2">
+                                <input type="text" placeholder="Введите название школы" value="" id="schoolNameAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+                        <tr role="row" class="odd">
+                            <td colspan="2">
+                                <input type="text" placeholder="Введите адрес школы" value="" id="schoolAddressAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+                        <tr role="row" class="odd">
+                            <td colspan="2">
+                                <input type="text" placeholder="Введите телефон школы" value="" id="schoolPhoneAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+                        <tr role="row" class="odd">
+                            <td colspan="2">
+                                <input type="text" placeholder="Введите e-mail школы" value="" id="schoolEmailAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+
+                        <tr role="row" class="odd">
+                            <td colspan="2">
+                                <input type="text" placeholder="Введите ФИО владельца школы" value="" id="schoolFioPersonAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+                        <tr role="row" class="odd">
+
+                            <td>
+                                <input type="text" placeholder="E-mail владельца школы" value="" id="schoolEmailPersonAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Номер телефона владельца школы" value="" id="schoolPhonePersonAdd" name="example-advanced-firstname" class="form-control ui-wizard-content">
+
+                            </td>
+                        </tr>
+                        <tr role="row" class="odd">
+
+                            <td>
+                                <div class="checkbox">
+                                    <label for="example-checkbox1">
+                                        <input class="discount_checkbox" type="radio" checked id="schoolFilialType1" data-id="10" name="choolFilialType" value="option1"> Собственный филиал                            </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox">
+                                    <label for="example-checkbox1">
+                                        <input class="discount_checkbox" id="schoolFilialType2" type="radio" data-id="10" name="choolFilialType" value="option1"> Франчайзинговый филиал                            </label>
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <tr role="row" class="odd" >
+                            <td colspan="2">
+                                <div class="form-group" id="selectFranch" style="display: none;">
+                                    <label class="control-label col-md-6" for="val_credit_card">Выберите пользователя:</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div><label>
+                                                    <select name="example-datatables2_length" id="franchUserSelect" class="form-control">
+                                                        <?foreach ($franchuUserArr as $user):?>
+                                                        <option data-id="<?=$user['ID']?>" value="Y"><?=$user['NAME']?> <?=$user['LAST_NAME']?></option>
+                                                        <?endforeach;?>
+                                                    </select></label></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onClick="addSchoolProcess()">Создать</button>
+
+                    <button class="btn btn-danger" onClick="hideCreateSchoolPopup()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal Content -->
+    </div>
+
+
+    <script>
+        taggleButton = document.querySelector('#taggleButton')
+        taggleButton2 = document.querySelector('#taggleButton2')
+
+        hideCreateSchoolPopupModal= document.querySelector('#addSchool-modal')
+        schoolFilialType2= document.querySelector('#schoolFilialType2')
+        schoolFilialType1= document.querySelector('#schoolFilialType1')
+        selectFranch = document.querySelector('#selectFranch')
+        franchUserSelect = document.querySelector('#franchUserSelect')
+        schoolFilialType2.addEventListener('click', ()=>{
+            selectFranch.style.display = 'block'
+        })
+        schoolFilialType1.addEventListener('click', ()=>{
+            selectFranch.style.display = 'none'
+        })
+
+        taggleButton.addEventListener('click', ()=>{
+
+            arrowIcon = document.querySelector('#arrowIcon')
+
+            console.log('taggle')
+           tbMax =  document.querySelector('#tableMax')
+            if(tbMax.style.display=='none'){
+                arrowIcon.classList.remove("fa-arrow-down");
+                arrowIcon.classList.add("fa-arrow-up");
+            tbMax.style.display = 'block'}
+            else{
+                arrowIcon.classList.remove("fa-arrow-up");
+                arrowIcon.classList.add("fa-arrow-down");
+                tbMax.style.display = 'none'
+            }
+            tbMini =  document.querySelector('#tableMini')
+            if(tbMini.style.display=='none'){
+                tbMini.style.display = 'block'}
+            else{
+                tbMini.style.display = 'none'
+            }
+        })
+        taggleButton2.addEventListener('click', ()=>{
+
+            arrowIcon = document.querySelector('#arrowIcon2')
+
+            console.log('taggle')
+            tbMax =  document.querySelector('#tableMax2')
+            if(tbMax.style.display=='none'){
+                arrowIcon.classList.remove("fa-arrow-down");
+                arrowIcon.classList.add("fa-arrow-up");
+                tbMax.style.display = 'block'}
+            else{
+                arrowIcon.classList.remove("fa-arrow-up");
+                arrowIcon.classList.add("fa-arrow-down");
+                tbMax.style.display = 'none'
+            }
+            tbMini =  document.querySelector('#tableMini2')
+            if(tbMini.style.display=='none'){
+                tbMini.style.display = 'block'}
+            else{
+                tbMini.style.display = 'none'
+            }
+        })
+        hideCreateSchoolPopup = ()=>{
+            hideCreateSchoolPopupModal.style.display = 'none'
+
+        }
+
+        showCreateSchoolPopup = ()=>{
+            hideCreateSchoolPopupModal.style.display = 'block'
+
+        }
+
+        editSchool = (table)=>{
+            console.log(table)
+            inps = table.querySelectorAll('input')
+butn = table.querySelector('.editButton')
+            butn.disabled= false
+            inps.forEach((el)=>{
+                console.log(el)
+                el.disabled=false
+            })
+        }
+
+        editSchoolProc = (id, table)=>{
+            name = table.querySelector('input[name="schoolName"]').value
+            address = table.querySelector('input[name="schoolAddress"]').value
+            phone = table.querySelector('input[name="schoolPhone"]').value
+            email = table.querySelector('input[name="schoolEmail"]').value
+            fioPerson = table.querySelector('input[name="schoolFioPerson"]').value
+            phonePerson = table.querySelector('input[name="schoolPhonePerson"]').value
+            emailPerson = table.querySelector('input[name="schoolEmailPerson"]').value
+if(name &&
+address &&
+phone &&
+email &&
+fioPerson &&
+phonePerson &&
+emailPerson){
+
+    BX.ajax({
+        url: '/api.php',
+        data: {
+            sessid: BX.bitrix_sessid(),
+            type: 'editSchool',
+            id: id,
+            name: name,
+            phone: phone,
+            address: address,
+            email: email,
+            fioperson: fioPerson,
+            phoneperson: phonePerson,
+            emailperson: emailPerson
+
+        },
+        method: 'POST',
+        dataType: 'json',
+        timeout: 30,
+        async: true,
+        processData: true,
+        scriptsRunFirst: true,
+        emulateOnload: true,
+        start: true,
+        cache: false,
+        onsuccess: function (data) {
+            console.log(data)
+            if(data=='Success'){
+                Swal(
+                    'Готово!',
+                    'Школа изменена',
+                    'success'
+                )
+                window.location.reload();
+            }
+            else{
+                console.log("error");
+            }
+        },
+        onfailure: function () {
+            console.log("error");
+
+        }
+    });
+}
+else{
+    Swal(
+        'Не заполнены данные!',
+        '',
+        'warning'
+    )
+}
+
+            console.log(name)
+        }
+        deleteSchool=(id)=>{
+            BX.ajax({
+                url: '/api.php',
+                data: {
+                    sessid: BX.bitrix_sessid(),
+                    type: 'deleteSchool',
+                    id: id
+
+                },
+                method: 'POST',
+                dataType: 'json',
+                timeout: 30,
+                async: true,
+                processData: true,
+                scriptsRunFirst: true,
+                emulateOnload: true,
+                start: true,
+                cache: false,
+                onsuccess: function (data) {
+                    console.log(data)
+                    if(data=='Success'){
+                        Swal(
+                            'Готово!',
+                            'Школа удалена',
+                            'success'
+                        )
+                        window.location.reload();
+                    }
+                    else{
+                        console.log("error");
+                    }
+                },
+                onfailure: function () {
+                    console.log("error");
+
+                }
+            });
+        }
+        blockSchool=(id, add)=>{
+            BX.ajax({
+                url: '/api.php',
+                data: {
+                    sessid: BX.bitrix_sessid(),
+                    type: 'blockSchool',
+                    id: id,
+                    add: add
+
+                },
+                method: 'POST',
+                dataType: 'json',
+                timeout: 30,
+                async: true,
+                processData: true,
+                scriptsRunFirst: true,
+                emulateOnload: true,
+                start: true,
+                cache: false,
+                onsuccess: function (data) {
+                    console.log(data)
+                    if(data=='Success'){
+                        Swal(
+                            'Готово!',
+                            '',
+                            'success'
+                        )
+                        window.location.reload();
+                    }
+                    else{
+                        console.log("error");
+                    }
+
+                },
+                onfailure: function () {
+                    console.log("error");
+
+                }
+            });
+        }
+        changeSchool=(id)=>{
+
+            BX.ajax({
+                url: '/api.php',
+                data: {
+                    sessid: BX.bitrix_sessid(),
+                    type: 'changeSchool',
+                    id: id
+
+                },
+                method: 'POST',
+                dataType: 'json',
+                timeout: 30,
+                async: true,
+                processData: true,
+                scriptsRunFirst: true,
+                emulateOnload: true,
+                start: true,
+                cache: false,
+                onsuccess: function (data) {
+                    console.log(data)
+                    if(data=='success'){
+                        Swal(
+                            'Готово!',
+                            '',
+                            'success'
+                        )
+                        window.location.href='/schedule.php';
+                    }
+                    else{
+                        console.log("error");
+                    }
+
+                },
+                onfailure: function () {
+                    console.log("error");
+
+                }
+            });
+        }
+
+        addSchoolProcess=()=>{
+
+            schoolNameAdd = document.querySelector('#schoolNameAdd')
+            schoolAddressAdd = document.querySelector('#schoolAddressAdd')
+            schoolPhoneAdd = document.querySelector('#schoolPhoneAdd')
+            schoolEmailAdd = document.querySelector('#schoolEmailAdd')
+            schoolFioPersonAdd = document.querySelector('#schoolFioPersonAdd')
+            schoolEmailPersonAdd = document.querySelector('#schoolEmailPersonAdd')
+            schoolPhonePersonAdd = document.querySelector('#schoolPhonePersonAdd')
+
+
+            if(schoolNameAdd.value &&
+                schoolAddressAdd.value &&
+                schoolPhoneAdd.value &&
+                schoolEmailAdd.value &&
+                schoolFioPersonAdd.value &&
+                schoolEmailPersonAdd.value &&
+                schoolPhonePersonAdd.value ){
+
+
+                BX.ajax({
+                    url: '/api.php',
+                    data: {
+                        sessid: BX.bitrix_sessid(),
+                        type: 'createSchool',
+                        franchid: schoolFilialType2.checked && franchUserSelect.options[franchUserSelect.options.selectedIndex].dataset.id ?
+                            franchUserSelect.options[franchUserSelect.options.selectedIndex].dataset.id : false,
+                        schoolname:schoolNameAdd.value,
+                        schooladdress:schoolAddressAdd.value,
+                        schoolphone:schoolPhoneAdd.value,
+                        schoolemail:schoolEmailAdd.value,
+                        schoolfioperson:schoolFioPersonAdd.value,
+                        schoolemailperson:schoolEmailPersonAdd.value,
+                        schoolphoneperson:schoolPhonePersonAdd.value
+
+                    },
+                    method: 'POST',
+                    dataType: 'json',
+                    timeout: 30,
+                    async: true,
+                    processData: true,
+                    scriptsRunFirst: true,
+                    emulateOnload: true,
+                    start: true,
+                    cache: false,
+                    onsuccess: function (data) {
+                        console.log(data)
+                        if(data=='Success'){
+                            Swal(
+                                'Готово!',
+                                'Школа создана',
+                                'success'
+                            )
+                            window.location.reload();
+                        }
+                        else{
+                            console.log("error");
+                        }
+
+                    },
+                    onfailure: function () {
+                        console.log("error");
+
+                    }
+                });
+
+
+
+
+
+                console.log(schoolFilialType2.checked)
+                console.log(franchUserSelect.options[franchUserSelect.options.selectedIndex].dataset.id);
+            }
+
+            else{
+
+                alert("Не заполнены поля!")
+            }
+
+
+
+
+        }
+
+        changeSchoolConfrim = (id)=>{
+            console.log(id)
+            Swal({
+                title: 'Вы уверены?',
+                text: "Вы точно хотите сменить школу?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#5cb85c',
+                cancelButtonColor: '#3085d6',
+                cancelButtonText: 'Отмена',
+                confirmButtonText: 'Сменить'
+            }).then((result) => {
+                if (result.value) {
+                    changeSchool(id)
+
+                }
+            })
+        }
+
+        deleteSchoolConfrim = (id)=>{
+            console.log(id)
+            Swal({
+                title: 'Вы уверены?',
+                text: "Вы точно хотите удалить школу?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#5cb85c',
+                cancelButtonColor: '#3085d6',
+                cancelButtonText: 'Отмена',
+                confirmButtonText: 'Удалить'
+            }).then((result) => {
+                if (result.value) {
+                    deleteSchool(id)
+
+                }
+            })
+        }
+    </script>
+
+
 <? }
 else if($privilege===2){?>
 Вы методист
 <?} else if($privilege===3){?>
 Вы учитель
+<?}
+else if($privilege===6){?>
+    Вы Администратор
 <?}
 else if($privilege===4){?>
     <div class="row">

@@ -11,6 +11,8 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+require($_SERVER["DOCUMENT_ROOT"]."/local/include/school_id.php");
+
 ?>
 <?
 $userBalance=[];
@@ -37,7 +39,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP'),
+        Array("IBLOCK_CODE" => 'GROUP',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_TEACHER')
@@ -53,7 +56,8 @@ if (CModule::IncludeModule("iblock")):
 # show url my elements
 $my_elements = CIBlockElement::GetList (
     Array("ID" => "ASC"),
-    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE'),
+    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE',
+        'PROPERTY_SCHOOL_ID'=>$schoolID),
     false,
     false,
     Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -93,7 +97,10 @@ endif;
         </thead>
         <tbody>
         <? $number=1;?>
-        <?foreach($arResult["ITEMS"] as $arItem):?>
+        <?foreach($arResult["ITEMS"] as $arItem):
+            if($schoolID && $schoolID!=$arItem["DISPLAY_PROPERTIES"]["SCHOOL_ID"]["DISPLAY_VALUE"]):
+                continue;
+            endif;?>
 <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
             <? if($arItem["DISPLAY_PROPERTIES"]['STATUS']['VALUE']!=='0'):?>
                 <tr role="row" class="odd">

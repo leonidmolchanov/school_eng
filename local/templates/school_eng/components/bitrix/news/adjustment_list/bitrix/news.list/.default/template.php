@@ -11,6 +11,8 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+require($_SERVER["DOCUMENT_ROOT"]."/local/include/school_id.php");
+
 ?>
 <?
 $userBalance=[];
@@ -23,7 +25,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'STUDENTS'),
+        Array("IBLOCK_CODE" => 'STUDENTS',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_NAME','PROPERTY_LAST_NAME')
@@ -39,7 +42,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'LESSON'),
+        Array("IBLOCK_CODE" => 'LESSON',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_FROM')
@@ -54,7 +58,8 @@ if (CModule::IncludeModule("iblock")):
 # show url my elements
 $my_elements = CIBlockElement::GetList (
     Array("ID" => "ASC"),
-    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID']),
+    Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $_REQUEST['groupID'],
+        'PROPERTY_SCHOOL_ID'=>$schoolID),
     false,
     false,
     Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -94,7 +99,11 @@ endif;
         </thead>
         <tbody>
         <? $number=1;?>
-        <?foreach($arResult["ITEMS"] as $arItem):?>
+        <?foreach($arResult["ITEMS"] as $arItem):
+            if($schoolID && $schoolID!=$arItem["DISPLAY_PROPERTIES"]["SCHOOL_ID"]["DISPLAY_VALUE"]):
+                continue;
+            endif;
+            ?>
 <!--        --><?// print_r($arItem["DISPLAY_PROPERTIES"]['NAME']['VALUE'] ) ;?>
                 <tr role="row" class="odd" onclick="selectRow(this)">
                 <td class="text-center sorting_1">

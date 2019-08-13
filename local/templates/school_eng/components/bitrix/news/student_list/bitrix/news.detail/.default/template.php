@@ -21,8 +21,7 @@ if(!CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['VAL
  CSaleUserAccount::Add($arFields);
 echo "Для пользователя ".$arResult["DISPLAY_PROPERTIES"]['USERID']['VALUE']." создан рублевый счет";
 }
-$ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['VALUE'], "RUB");
-
+$balance = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['VALUE'], "RUB");
 
 
 ?>
@@ -32,7 +31,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
     <?elseif($arResult["DISPLAY_PROPERTIES"]['STATUS']['VALUE']==1):?>
         <small class="text-success">Активен</small>
         <?elseif($arResult["DISPLAY_PROPERTIES"]['STATUS']['VALUE']==2):?>
-        <small class="text-warning">Болеет</small>
+        <small class="text-warning">Заморожен</small>
 <?endif;?>
 </h3>
 
@@ -127,6 +126,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
                         'TYPE'=>0,
                         'LESSON' => $fields['TIMESTAMP_X'],
                         'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
+                        'SUB' => $props['SUB']['VALUE']
                     );
                     array_push($userJournal, $arr);
                 }
@@ -135,7 +135,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
                         'TYPE'=>1,
                         'LESSON' => $fields['TIMESTAMP_X'],
                         'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
-                    );
+                        'SUB' => $props['SUB']['VALUE']                    );
                     array_push($userJournal, $arr);
                 }
                 if (in_array($arResult['ID'], $props['DISEASE']['VALUE'])) {
@@ -143,11 +143,13 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
                         'TYPE'=>2,
                         'LESSON' => $fields['TIMESTAMP_X'],
                         'GROUP' => $userGroup[$props['GROUPID']['VALUE']],
+                        'SUB' => $props['SUB']['VALUE']
                     );
                     array_push($userJournal, $arr);
                 }
             }
         endif;
+
         $adjustmentList = 0;
 
 
@@ -523,15 +525,15 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
         </div>
         <div class="row">
         <?if($arResult["DISPLAY_PROPERTIES"]['STATUS']['VALUE']==2):?>
-            <button class="btn btn-success" onclick="editStudent(1)" > Выздоровил</button>
+            <button class="btn btn-success" onclick="editStudent(1)" > Разморозить</button>
          <?else:?>
-            <button class="btn btn-warning" onclick="editStudent(2)" > Болеет</button>
+            <button class="btn btn-warning" onclick="editStudent(2)" > Заморозить</button>
         <?endif;?>
 
         <?if($arResult["DISPLAY_PROPERTIES"]['STATUS']['VALUE']==1):?>
-            <button class="btn btn-danger" onclick="editStudent(0)" > Заблокировать</button>
+            <button class="btn btn-danger" onclick="editStudent(0)" > Не занимается</button>
          <?else:?>
-            <button class="btn btn-primary" onclick="editStudent(1)" > Разблокировать</button>
+            <button class="btn btn-primary" onclick="editStudent(1)" > Занимается</button>
          <?endif;?>
 
         </div>
@@ -572,6 +574,15 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
 ?></span><?
         }
         ?>
+        <h5 class="page-header-sub"><i class="fa fa-bolt"></i> Баланс</h5>
+        <?if($balance["CURRENT_BUDGET"]>0):?>
+        <div class="alert alert-success">
+            <?else:?>
+            <div class="alert alert-danger">
+                <?endif;?>
+                <? echo SaleFormatCurrency($balance["CURRENT_BUDGET"],
+                    $balance["CURRENCY"])?>
+            </div>
         <h5 class="page-header-sub"><i class="fa fa-bolt"></i> Баланс уроков</h5>
             <?if($arResult["DISPLAY_PROPERTIES"]['LESSON_BALANCE']['VALUE']>0):?>
         <div class="alert alert-success">
@@ -700,7 +711,7 @@ $ar = CSaleUserAccount::GetByUserID($arResult["DISPLAY_PROPERTIES"]['USERID']['V
                                 </td>
                                 <td>
                                     <?=$arItem['GROUP']?>
-
+<?if($arItem['SUB']):?> (Дополнительное)<?endif;?>
                                 </td>
                                 <td>
                                     <?if($arItem['TYPE']===0):?>

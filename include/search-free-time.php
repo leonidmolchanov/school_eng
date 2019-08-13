@@ -14,7 +14,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'AUDITORIUM'),
+        Array("IBLOCK_CODE" => 'AUDITORIUM',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_COLOR')
@@ -32,7 +33,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP'),
+        Array("IBLOCK_CODE" => 'GROUP',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_TEACHER')
@@ -55,6 +57,7 @@ if (CModule::IncludeModule("iblock")):
         Array("PROPERTY_TO" => "ASC"),
         Array("IBLOCK_CODE" => 'LESSON',
             'PROPERTY_GROUP'=> $group,
+            'PROPERTY_SCHOOL_ID'=>$schoolID,
             '>=PROPERTY_TO' => date("Y-m-d", strtotime($_REQUEST['dateFrom'])).' '.date("H:i:s", strtotime($_REQUEST['timeFrom'])),
             '<=PROPERTY_FROM' => date("Y-m-d", strtotime($_REQUEST['dateTo'])).' '.date("H:i:s", strtotime($_REQUEST['timeTo']))),
         false,

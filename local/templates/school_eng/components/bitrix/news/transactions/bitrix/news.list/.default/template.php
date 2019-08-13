@@ -12,6 +12,8 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
+require($_SERVER["DOCUMENT_ROOT"]."/local/include/school_id.php");
+
 ?>
 
 <div class="col-md-12 push">
@@ -43,6 +45,9 @@ $this->setFrameMode(true);
             <?$number=1;?>
             <?foreach($arResult["ITEMS"] as $arItem):?>
                 <?
+//                if($schoolID && $schoolID!=$arItem["DISPLAY_PROPERTIES"]["SCHOOL_ID"]["DISPLAY_VALUE"]):
+//                    continue;
+//                endif;
                 $this->AddEditAction($arItem['ID'], $arItem['EDIT_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_EDIT"));
                 $this->AddDeleteAction($arItem['ID'], $arItem['DELETE_LINK'], CIBlock::GetArrayByID($arItem["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
                 ?>
@@ -61,7 +66,8 @@ $this->setFrameMode(true);
                         <td>Проведен</td>
                     <?endif;?>
                 </tr>
-                <?$number++;?>
+                <?
+                $number++;?>
             <?endforeach;?>
             </tbody>
         </table>

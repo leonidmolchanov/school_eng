@@ -1,9 +1,73 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 IncludeTemplateLangFile(__FILE__);
 CJSCore::Init(array("fx"));
+require($_SERVER["DOCUMENT_ROOT"]."/local/include/school_id.php");
 use Bitrix\Main\Page\Asset;
 global $USER;
-?>
+// Определение групп пользователей
+$isAdmin=1;
+$isMethodist=9;
+$isTeacher=8;
+$isStudent=7;
+$isFranch=17;
+$privilege=0;
+$isAdminPortal = 16;
+
+$check=false;
+$arGroups = $USER->GetUserGroupArray();
+foreach ($arGroups as $state){
+    if($state==$isAdmin || $state==$isAdminPortal){
+        $check=true;
+break;
+    }
+}
+$block=1;
+$schoolName="";
+if(!$check){
+
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'SCHOOL',
+                'ID'=>$schoolID),
+            false,
+            false,
+            Array('ID',
+                'PROPERTY_BLOCK')
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+            $block=$ar_fields['PROPERTY_BLOCK_VALUE'];
+            $schoolName = $ar_fields['NAME'];
+        }
+    endif;
+        if($block==1) {
+            header('Location: /block.php');
+        }
+
+}
+else{
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'SCHOOL',
+                'ID'=>$schoolID),
+            false,
+            false,
+            Array('ID', 'NAME')
+        );
+
+        while($ar_fields = $my_elements->GetNext())
+        {
+            $schoolName = $ar_fields['NAME'];
+        }
+    endif;
+}
+    ?>
+
 <!DOCTYPE html>
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
@@ -136,17 +200,21 @@ global $USER;
 
                 <!-- Loading Indicator, Used for demostrating how loading of widgets could happen, check main.js - uiDemo() -->
                 <div id="loading" class="pull-left"><i class="fa fa-certificate fa-spin"></i></div>
+                <div class="row">
 
+                    <div class="col-md-10">
                 <!-- Header Widgets -->
-                <!-- You can create the widgets you want by replicating the following. Each one exists in a <li> element -->
-
-
+<div class="text-center">                        <span class="label text-center" style="padding-top: 10px;"><?=$schoolName?></span>
+</div>
+                    </div>
 
                     <?$APPLICATION->IncludeComponent("bitrix:system.auth.form", "auth_mini", Array(
 
                     ),
                         false
                     );?>
+                </div>
+
                 <!-- END Header Widgets -->
             </header>
             <!-- END Header -->
@@ -195,7 +263,14 @@ global $USER;
 
                 <!-- Page Content -->
                 <div id="page-content">
-                    <!-- Navigation info -->
+<?
+$rsUser = CUser::GetByID($USER->GetID());
+$arUser = $rsUser->Fetch();
+global $schoolFilter;
+$schoolFilter =  array( "PROPERTY_SCHOOL_ID_VALUE"=>1);
+$schoolID =  $arUser['UF_SCHOOL_ID'];
+?>
+    <!-- Navigation info -->
 <?$APPLICATION->IncludeComponent("bitrix:breadcrumb", "navigate", Array(
     "PATH" => "",	// Путь, для которого будет построена навигационная цепочка (по умолчанию, текущий путь)
     "SITE_ID" => "s1",	// Cайт (устанавливается в случае многосайтовой версии, когда DOCUMENT_ROOT у сайтов разный)

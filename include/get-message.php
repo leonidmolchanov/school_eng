@@ -11,7 +11,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "desc"),
-        Array("IBLOCK_CODE" => 'STUDENTS'),
+        Array("IBLOCK_CODE" => 'STUDENTS',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_NAME','PROPERTY_LAST_NAME', 'PROPERTY_USERID')
@@ -27,7 +28,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "desc"),
-        Array("IBLOCK_CODE" => 'TEACHER'),
+        Array("IBLOCK_CODE" => 'TEACHER',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_NAME','PROPERTY_LAST_NAME', 'PROPERTY_USER')
@@ -43,7 +45,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "desc"),
-        Array("IBLOCK_CODE" => 'METHODIST'),
+        Array("IBLOCK_CODE" => 'METHODIST',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_NAME','PROPERTY_LAST_NAME', 'PROPERTY_USER')
@@ -59,7 +62,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "desc"),
-        Array("IBLOCK_CODE" => 'CHAT'),
+        Array("IBLOCK_CODE" => 'CHAT',
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_TEXT','PROPERTY_FROM_ID','PROPERTY_TO_ID', 'DATE_CREATE')

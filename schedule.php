@@ -122,94 +122,159 @@ $APPLICATION->SetTitle("Расписание");
                         })
                         length = 0;
                    if(filter=='day') {
-                       data.content[0].map(function (row) {
-                           len = 0;
+                       if(!data.content[0]['WEEKEND'] && !data.content[0]['HOLIDAY'])  {
+                           data.content[0].map(function (row) {
+                               len = 0;
+                               if(row["CONTENT"]) {
+                                   row["CONTENT"].map(function (item) {
+                                       len++
+                                   })
 
-                           row["CONTENT"].map(function (item) {
-                               len++
-                           })
-
-                           if (len > length) {
-                               length = len;
-                           }
-                       });
-                       console.log('len' + len)
-
-                       data.content[0].map(function (row) {
-                           newBodyContent = '<tr role="row" class="odd">'
-                           newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
-                           i = 0;
-                           row["CONTENT"].map(function (lessons) {
-                               color = "ffffff";
-                               data.auditorium.map(function (value) {
-                                   if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
-                                       color = value["PROPERTY_COLOR_VALUE"];
+                                   if (len > length) {
+                                       length = len;
                                    }
-                               })
-                               console.log(lessons["PROPERTY_REPEAT_VALUE"])
-                               if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                   newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать" data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                               }
+                           });
+                           console.log('len' + len)
+
+                           data.content[0].map(function (row) {
+                               newBodyContent = '<tr role="row" class="odd">'
+                               newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
+                               i = 0;
+
+                               if(row["CONTENT"]) {
+                                   row["CONTENT"].map(function (lessons) {
+                                       color = "ffffff";
+                                       data.auditorium.map(function (value) {
+                                           if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                                               color = value["PROPERTY_COLOR_VALUE"];
+                                           }
+                                       })
+                                       console.log(lessons["PROPERTY_REPEAT_VALUE"])
+                                       if (Number(lessons["PROPERTY_REPEAT_VALUE"]) !== 0 && Number(lessons["PROPERTY_SUB_VALUE"]) == 0) {
+                                           newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать" data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '"  data-lesson-sub="' + lessons["PROPERTY_SUB_VALUE"] +'"   data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                                       }
+                                       else {
+                                           lessons['TRIAL']?
+                                               newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                                :
+                                               newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '"  data-lesson-sub="' + lessons["PROPERTY_SUB_VALUE"] +'"  data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                       }
+                                       i++
+                                   })
+
+                                   if (length - i !== 0) {
+                                       for (var x = 0; x < (length - i); x++)
+                                           newBodyContent += ' <td class=""></td>'
+                                   }
+                                   newBodyContent += '</tr>';
+                               }
+                               else{
+                                   newBodyContent += '<td colspan="'+length+'" class="text-center">Выходной</td></tr>'
 
                                }
-                               else {
-                                   newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '" data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
-                               }
-                               i++
-                           })
-                           if (length - i !== 0) {
-                               for (var x = 0; x < (length - i); x++)
-                                   newBodyContent += ' <td class=""></td>'
-                           }
-                           newBodyContent += '</tr>';
+
+
+                               $("#tblTest tbody").append(newBodyContent);
+                           });
+                       }
+
+
+                       else if(data.content[0]['HOLIDAY']) {
+                           newBodyContent = '<tr role="row" class="odd"><td class="text-center">Праздник</td></tr>'
                            $("#tblTest tbody").append(newBodyContent);
-                       });
+
+                           console.log('Выходной')
+                       }
+
+                       else{
+                           newBodyContent = '<tr role="row" class="odd"><td class="text-center">Выходной</td></tr>'
+                           $("#tblTest tbody").append(newBodyContent);
+
+                           console.log('Выходной')
+                       }
+
                    }
                         else if(filter=='week') {
                        data.content.map(function (block) {
+                           if (!block['WEEKEND'] && !block['HOLIDAY']){
+                               block.map(function (row) {
+                                   len = 0;
+                                   if(row["CONTENT"]) {
 
-                           block.map(function (row) {
-                               len = 0;
+                                       row["CONTENT"].map(function (item) {
+                                           len++
+                                       })
 
-                               row["CONTENT"].map(function (item) {
-                                   len++
-                               })
-
-                               if (len > length) {
-                                   length = len;
-                               }
-                           });
+                                       if (len > length) {
+                                           length = len;
+                                       }
+                                   }
+                               });
+                       }
                        });
                        z=0;
                        data.content.map(function (block) {
                            newBodyContentFor="";
+
+
+                           if (!block['WEEKEND'] && !block['HOLIDAY']){
+console.log('poincheck')
                            block.map(function (row) {
                                newBodyContent = '<tr role="row" class="odd">'
                                newBodyContent += ' <td class="text-center" style="vertical-align: middle;"><strong>' + row["NAME"] + '</strong></td>'
                                i = 0;
-                               row["CONTENT"].map(function (lessons) {
-                                   color = "ffffff";
-                                   data.auditorium.map(function (value) {
-                                       if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
-                                           color = value["PROPERTY_COLOR_VALUE"];
-                                       }
-                                   })
-                                   console.log(color)
-                                   if(Number(lessons["PROPERTY_REPEAT_VALUE"])!==0){
-                                       newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
 
+                               if(row["CONTENT"]) {
+                                   row["CONTENT"].map(function (lessons) {
+                                       color = "ffffff";
+                                       data.auditorium.map(function (value) {
+                                           if (lessons["PROPERTY_AUDITORIUM_VALUE"] == value["ID"]) {
+                                               color = value["PROPERTY_COLOR_VALUE"];
+                                           }
+                                       })
+
+                                       if (Number(lessons["PROPERTY_REPEAT_VALUE"]) !== 0 && Number(lessons["PROPERTY_SUB_VALUE"]) == 0) {
+                                           newBodyContent += ' <td class="text-center table-hover" style="cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+
+                                       }
+                                       else {
+                                           lessons['TRIAL']?
+                                               newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '"  data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                               :
+                                           newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
+                                       }
+                                       i++
+                                   })
+
+
+                                   if (length - i !== 0) {
+                                       for (var x = 0; x < (length - i); x++)
+                                           newBodyContent += ' <td class=""></td>'
                                    }
-                                   else {
-                                       newBodyContent += ' <td class="text-center table-hover" style="background: radial-gradient(#ffffff, ' + color + '); cursor: pointer;" bgcolor="' + color + '"><a  class="close" alt="Редактировать"  data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" data-lesson-cost="' + lessons["PROPERTY_COST_VALUE"] + '" data-lesson-repeat="' + lessons["PROPERTY_REPEAT_VALUE"] + '"  data-group-id="' + lessons["PROPERTY_GROUP_VALUE"] + '" data-auditorium-id="' + lessons["PROPERTY_AUDITORIUM_VALUE"] + '" onclick="editPopup(1, this)" data-dismiss="modal">&#9998;</a><a  class="close" alt="Удалить" id="' + lessons["ID"] + '" onclick="confrimDelete(this.id)" data-dismiss="modal">×</a><div data-lesson-name="' + lessons["NAME"] + '" data-lesson-time-from="' + lessons["PROPERTY_FROM_VALUE"] + '" data-lesson-time-to="' + lessons["PROPERTY_TO_VALUE"] + '" data-lesson-id="' + lessons["ID"] + '" onclick="showStructure(this)" ondblclick="editPopup(1, this)">' + lessons["NAME"] + '<br>' + lessons["PROPERTY_FROM_VALUE"] + '-' + lessons["PROPERTY_TO_VALUE"] + '</div></td>'
-                                   }
-                                   i++
-                               })
-                               if (length - i !== 0) {
-                                   for (var x = 0; x < (length - i); x++)
-                                       newBodyContent += ' <td class=""></td>'
+                                   newBodyContent += '</tr>';
                                }
-                               newBodyContent += '</tr>';
+                               else{
+                                   newBodyContent += '<td colspan="'+length+'" class="text-center">Выходной</td></tr>'
+
+                               }
+
                                newBodyContentFor+=newBodyContent;
                            });
+                       }
+
+                           else if(block['HOLIDAY']) {
+                               newBodyContentFor = '<tr role="row" class="odd"><td colspan="'+length+1+'" class="text-center">Праздник</td></tr>'
+
+                           }
+                           else{
+                               newBodyContentFor = '<tr role="row" class="odd"><td colspan="'+length+1+'" class="text-center">Выходной</td></tr>'
+
+                               console.log('Выходной 2')
+                       }
+
+
                            $("#tblTest tbody").append('<tr><td colspan="'+length+1+'"><strong>'+moment().add('days', (navigate+z)).format('dddd YYYY-MM-DD')+'</strong></td></tr>');
                            $("#tblTest tbody").append(newBodyContentFor);
 z++;
@@ -243,7 +308,8 @@ z++;
                         group: $("#groupSelect option:selected").attr('data-group-id'),
                         auditorium: $("#auditoriumSelect option:selected").attr('data-auditorium-id'),
                         repeat: $("#repeatLesson").prop("checked"),
-                        cost: $("#cost").val()
+                        cost: $("#cost").val(),
+                        sub: $('#subLesson').prop("checked")
                     },
                     method: 'POST',
                     dataType: 'json',
@@ -279,9 +345,9 @@ z++;
         }
 
         function deleteLesson(id) {
-            console.log(id)
 
-            console.log(id)
+
+
             BX.ajax({
                 url: '/api.php',
                 data: {
@@ -320,7 +386,7 @@ z++;
         function editLesson() {
             if($("#editLessonName").val() && $("#editLessonFrom").val() && $("#editLessonTo").val() && $("#editLessonDate").val() && $("#editGroupSelect option:selected").attr('data-group-id') && $("#editAuditoriumSelect option:selected").attr('data-auditorium-id')) {
 
-console.log($("#edit-idLesson").val())
+
                 BX.ajax({
                     url: '/api.php',
                     data: {
@@ -334,7 +400,8 @@ console.log($("#edit-idLesson").val())
                         auditorium: $("#editAuditoriumSelect option:selected").attr('data-auditorium-id'),
                         idLesson: $("#edit-idLesson").val(),
                         repeat: $("#editRepeatLesson").prop("checked"),
-                        cost: $("#edit-cost").val()
+                        cost: $("#edit-cost").val(),
+                        sub: $("#editSub").prop("checked")
 
                     },
                     method: 'POST',
@@ -378,7 +445,7 @@ console.log($("#edit-idLesson").val())
             else if(state=='now'){
                 navigate=0
             }
-            console.log(navigate)
+
             ajaxRequest(navigate)
         }
 
@@ -416,10 +483,28 @@ console.log($("#edit-idLesson").val())
                 $("#editLessonFrom").val($(obj).attr('data-lesson-time-from'));
                 cost=$(obj).attr('data-lesson-cost')
                 repeat=$(obj).attr('data-lesson-repeat')
-                console.log(obj)
-                if(repeat!=='null'){
+                sub=$(obj).attr('data-lesson-sub')
+                console.log(sub)
+                if(sub=='1'){
+                    $("#editSub").prop('checked', true)
+
+                    // $("#editRepeatLesson").prop('disabled', true)
+                    // $("#editRepeatLesson").prop('checked', false)
+
+                }
+                else{
+                    $("#editSub").prop('checked', false)
+                    // $("#editRepeatLesson").prop('disabled', false)
+                }
+console.log('repiat: '+repeat)
+                if(repeat!=='0'){
                     $("#editRepeatLesson").prop('checked', true)
                 }
+                else{
+                    $("#editRepeatLesson").prop('checked', false)
+
+                }
+                console.log(cost)
                 $("#edit-cost").val(Number(cost));
                 document.getElementById('edit-modal').style.display='block';
             }
@@ -449,7 +534,6 @@ function changeFilter(state) {
 
 
         function searchFreeTime() {
-            console.log($("#searchTeacher option:selected").attr('data-id'))
             BX.ajax({
                 url: '/api.php',
                 data: {
@@ -474,7 +558,6 @@ function changeFilter(state) {
                 start: true,
                 cache: false,
                 onsuccess: function (data) {
-                    console.log(data['AUDITORIUM'])
                     $('#search-modal').hide()
                     $('#free-time-result-modal').show()
                     $('#free-time-result-list tbody').empty();
@@ -491,7 +574,6 @@ function changeFilter(state) {
             });
         }
 function showStructure(elem) {
-    console.log(elem.dataset.lessonId)
     BX.ajax({
         url: '/api.php',
         data: {
@@ -509,11 +591,9 @@ function showStructure(elem) {
         start: true,
         cache: false,
         onsuccess: function (data) {
-            console.log(data)
             $('#structure-modal').show()
             number=1
             data['STUDENTS'].forEach(function (item) {
-                console.log(item)
                 adjustment=""
 ;                if(item['PROPERTY_STATUS_VALUE']==0){
                     status='Заблокирован'
@@ -569,6 +649,8 @@ function showStructure(elem) {
             $('#createLessonDate').val(from[0])
 
         }
+
+
     </script>
     <div id="example-modal" class="modal in" aria-hidden="false" style="display: none; padding-right: 0px;"><div class="modal-backdrop  in" style="height: 833px;"></div>
         <!-- Modal Dialog -->
@@ -635,7 +717,7 @@ function showStructure(elem) {
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" id="costForm" style="display: none">
                             <div class="col-md-8">
                                 <label class="control-label col-md-6" for="example-input-timepicker">Стоимость:</label>
                                 <div class="input-group bootstrap-timepicker">
@@ -643,11 +725,17 @@ function showStructure(elem) {
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-8">
+                        <div class="form-group" >
+                            <div class="col-md-8" >
                                 <label class="control-label col-md-6" for="example-input-datepicker">Повторять занятие:</label>
                                 <div class="input-group bootstrap-timepicker">
                                     <input type="checkbox" checked="true" id="repeatLesson">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label col-md-10" for="example-input-datepicker">Доп. занятие:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="checkbox"  id="subLesson">
                                 </div>
                             </div>
                         </div>
@@ -737,14 +825,22 @@ function showStructure(elem) {
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-8">
+
+                        <div class="form-group" >
+                            <div class="col-md-8" >
                                 <label class="control-label col-md-6" for="example-input-datepicker">Повторять занятие:</label>
                                 <div class="input-group bootstrap-timepicker">
-                                    <input type="checkbox"  id="editRepeatLesson">
+                                    <input type="checkbox" id="editRepeatLesson" checked="true" id="repeatLesson">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label col-md-10" for="example-input-datepicker">Доп. занятие:</label>
+                                <div class="input-group bootstrap-timepicker">
+                                    <input type="checkbox"  id="editSub">
                                 </div>
                             </div>
                         </div>
+
                 </div>
                 </form>
                 <div class="modal-footer">
@@ -884,7 +980,19 @@ function showStructure(elem) {
         <!-- END Modal Content -->
     </div>
 
+<script>
+    costForm =  document.querySelector('#costForm')
+    repeatLessonForm = document.querySelector('#repeatLessonForm')
+  subLesson = document.querySelector('#subLesson')
+  subLesson.addEventListener('click', ()=> {
 
+      if(subLesson.checked) {
+          costForm.style.display = 'block'
+      }else {
+          costForm.style.display = 'none'
+      }
+  })
+</script>
 
     <!-- END Modal Dialog -->
     <div class="fc-toolbar">

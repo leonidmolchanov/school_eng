@@ -1,6 +1,6 @@
 <?
 global $USER;
-    function getNextWeek($id, $name, $from, $to, $group, $audit, $repeat)
+    function getNextWeek($id, $name, $from, $to, $group, $audit, $repeat, $schoolid)
     {
         $newfrom= date("Y-m-d H:i:s", strtotime($from. ' +1 week'));
         $newto= date("Y-m-d H:i:s", strtotime($to. ' +1 week'));
@@ -29,7 +29,7 @@ global $USER;
         endif;
 
         if(!$check){
-            setLesson($id, $name, $newfrom, $newto, $group, $audit, $repeat);
+            setLesson($id, $name, $newfrom, $newto, $group, $audit, $repeat, $schoolid);
         }
     }
 
@@ -47,19 +47,19 @@ global $USER;
                     "PROPERTY_REPEAT" => 1),
                 false,
                 false,
-                Array('ID', 'NAME', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_GROUP', 'PROPERTY_AUDITORIUM', 'PROPERTY_REPEAT')
+                Array('ID', 'NAME','PROPERTY_SCHOOL_ID', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_GROUP', 'PROPERTY_AUDITORIUM', 'PROPERTY_REPEAT')
             );
 
             while ($ar_fields = $my_elements->GetNext()) {
                 print_r($ar_fields);
-                getNextWeek($ar_fields['ID'], $ar_fields['NAME'], $ar_fields['PROPERTY_FROM_VALUE'], $ar_fields['PROPERTY_TO_VALUE'], $ar_fields['PROPERTY_GROUP_VALUE'], $ar_fields['PROPERTY_AUDITORIUM_VALUE'], $ar_fields['PROPERTY_REPEAT_VALUE']);
+                getNextWeek($ar_fields['ID'], $ar_fields['NAME'], $ar_fields['PROPERTY_FROM_VALUE'], $ar_fields['PROPERTY_TO_VALUE'], $ar_fields['PROPERTY_GROUP_VALUE'], $ar_fields['PROPERTY_AUDITORIUM_VALUE'], $ar_fields['PROPERTY_REPEAT_VALUE'], $ar_fields['PROPERTY_SCHOOL_ID_VALUE']);
             }
         endif;
 
     }
 
 
-    function             setLesson($id, $name, $newfrom, $newto, $group, $audit, $repeat){
+    function             setLesson($id, $name, $newfrom, $newto, $group, $audit, $repeat, $schoolid){
         $iblockid=0;
         if(CModule::IncludeModule("iblock"))
         {
@@ -80,6 +80,7 @@ global $USER;
         $el = new CIBlockElement;
 
         $PROP = array();
+        $PROP['SCHOOL_ID']= $schoolid;
         $PROP["AUDITORIUM"] = $audit;  // учитель для группы
         $PROP["FROM"] = date("d.m.Y H:i", strtotime($newfrom));
         $PROP["TO"] =date("d.m.Y H:i", strtotime($newto));

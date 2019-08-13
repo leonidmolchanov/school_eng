@@ -15,7 +15,8 @@ if (CModule::IncludeModule("iblock")):
     $my_elements = CIBlockElement::GetList(
         Array("PROPERTY_TO" => "ASC"),
         Array("IBLOCK_CODE" => 'LESSON',
-            'ID' => $_REQUEST['id']),
+            'ID' => $_REQUEST['id'],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME', 'PROPERTY_FROM', 'PROPERTY_TO', 'PROPERTY_GROUP', 'PROPERTY_AUDITORIUM', 'PROPERTY_REPEAT')
@@ -32,7 +33,8 @@ if (CModule::IncludeModule("iblock")):
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
         Array("IBLOCK_CODE" => 'GROUP',
-            'ID' => $lessons['PROPERTY_GROUP_VALUE']),
+            'ID' => $lessons['PROPERTY_GROUP_VALUE'],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'NAME','PROPERTY_TEACHER')
@@ -48,7 +50,8 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $lessons['PROPERTY_GROUP_VALUE']),
+        Array("IBLOCK_CODE" => 'GROUP_STRUCTURE', "PROPERTY_GROUP_ID" => $lessons['PROPERTY_GROUP_VALUE'],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_STUDENT_ID','PROPERTY_GROUP_ID')
@@ -61,7 +64,8 @@ if (CModule::IncludeModule("iblock")):
 if(!empty($structure)):
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure),
+        Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $structure,
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_STATUS')
@@ -75,7 +79,8 @@ if(!empty($structure)):
 endif;
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'ADJUSTMENT', "PROPERTY_ALESSONID" => $_REQUEST['id']),
+        Array("IBLOCK_CODE" => 'ADJUSTMENT', "PROPERTY_ALESSONID" => $_REQUEST['id'],
+            'PROPERTY_SCHOOL_ID'=>$schoolID),
         false,
         false,
         Array('ID', 'PROPERTY_USERID')
@@ -89,7 +94,8 @@ endif;
     if(!empty($adjustment)) {
         $my_elements = CIBlockElement::GetList(
             Array("ID" => "ASC"),
-            Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $adjustment),
+            Array("IBLOCK_CODE" => 'STUDENTS', "ID" => $adjustment,
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
             false,
             false,
             Array('ID', 'PROPERTY_DOGOVOR', 'PROPERTY_NAME', 'PROPERTY_LAST_NAME', 'PROPERTY_SECOND_NAME', 'PROPERTY_STATUS')

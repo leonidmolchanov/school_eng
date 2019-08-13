@@ -10,7 +10,9 @@ if (CModule::IncludeModule("iblock")):
     # show url my elements
     $my_elements = CIBlockElement::GetList (
         Array("ID" => "ASC"),
-        Array("IBLOCK_CODE" => 'TICKETS'),
+        Array("IBLOCK_CODE" => 'TICKETS',
+//            'PROPERTY_SCHOOL_ID'=>$schoolID
+        ),
         false,
         false,
         Array()

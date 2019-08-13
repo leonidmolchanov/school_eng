@@ -17,7 +17,8 @@ if (CModule::IncludeModule("iblock")):
         Array("IBLOCK_CODE" => 'STUDENTS', 'ID'=>$_REQUEST['elementid']),
         false,
         false,
-        Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_LESSON_BALANCE')
+        Array('ID', 'PROPERTY_DOGOVOR','PROPERTY_NAME','PROPERTY_LAST_NAME','PROPERTY_SECOND_NAME', 'PROPERTY_LESSON_BALANCE',
+            'PROPERTY_SCHOOL_ID'=>$schoolID)
     );
 
     while($ar_fields = $my_elements->GetNext())
@@ -46,6 +47,7 @@ $PROP["MOTHER_TEL"] = $_REQUEST['mothertel'];
 $PROP["COMMENTS"] = $_REQUEST['comments'];
 $PROP["STATUS"] = $_REQUEST['status'];
 $PROP["USERID"] = $_REQUEST['userid'];
+$PROP['SCHOOL_ID']=$schoolID;
 $PROP["LESSON_BALANCE"] = $balance;
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем

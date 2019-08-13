@@ -28,6 +28,7 @@ if (
 {
 
     $rsUser = CUser::GetByLogin( $_REQUEST['login'] );
+
     if ($arUser = $rsUser->Fetch())
     {
         if(strlen($arUser["PASSWORD"]) > 32)
@@ -56,6 +57,9 @@ if (
 
 if($_REQUEST['sessid']==bitrix_sessid() || $login_password_correct):
 global $USER;
+    $rsUser = CUser::GetByID($USER->GetID());
+    $arUser = $rsUser->Fetch();
+    $schoolID =  $arUser['UF_SCHOOL_ID'];
 CModule::IncludeModule('iblock');
 if($_REQUEST['type']=='getGraph'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-graph.php");
@@ -89,8 +93,12 @@ elseif($_REQUEST['type']=='getStudent'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-student.php");
 elseif($_REQUEST['type']=='editStudent'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/edit-student.php");
+elseif($_REQUEST['type']=='editTeacher'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-teacher.php");
 elseif($_REQUEST['type']=='createTeacher'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-teacher.php");
+elseif($_REQUEST['type']=='createFranchisee'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-franchisee.php");
 elseif($_REQUEST['type']=='createMethodist'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/create-methodist.php");
 elseif($_REQUEST['type']=='getGroupStructure'):
@@ -125,6 +133,32 @@ elseif($_REQUEST['type']=='sendMessage'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/send-message.php");
 elseif($_REQUEST['type']=='getListUserMessage'):
     require($_SERVER["DOCUMENT_ROOT"]."/include/get-list-user-message.php");
+elseif($_REQUEST['type']=='setSchedule'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/set-schedule.php");
+elseif($_REQUEST['type']=='createTrial'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-trial.php");
+elseif($_REQUEST['type']=='editTrial'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-trial.php");
+elseif($_REQUEST['type']=='getAnaliticsTableContent'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-analitics-table.content.php");
+elseif($_REQUEST['type']=='getAnalyticsLesson'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/get-analytics-lesson.php");
+elseif($_REQUEST['type']=='changeSchool'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/change-school.php");
+elseif($_REQUEST['type']=='createSchool'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-school.php");
+elseif($_REQUEST['type']=='blockSchool'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/block-school.php");
+elseif($_REQUEST['type']=='deleteSchool'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/delete-school.php");
+elseif($_REQUEST['type']=='editSchool'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-school.php");
+elseif($_REQUEST['type']=='createAdministrator'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/create-administrator.php");
+elseif($_REQUEST['type']=='editMethodist'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-methodist.php");
+elseif($_REQUEST['type']=='editAdministrator'):
+    require($_SERVER["DOCUMENT_ROOT"]."/include/edit-administrator.php");
 else:
     echo $_REQUEST['type'];
     echo "rr Type";

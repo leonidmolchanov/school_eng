@@ -49,9 +49,11 @@ if (intval($ID) > 0):
     $responce = "success";
 
 
+
     $el = new CIBlockElement;
 
     $PROP = array();
+    $PROP['SCHOOL_ID']=$schoolID;
     $PROP["DOGOVOR"] = $_REQUEST["dogovor"];
     $PROP["NAME"] = $_REQUEST["name"];
     $PROP["LAST_NAME"] = $_REQUEST["lastName"];
@@ -79,15 +81,46 @@ if (intval($ID) > 0):
         "ACTIVE"         => "Y"
     );
 
-    if($PRODUCT_ID = $el->Add($arLoadProductArray))
+    if($PRODUCT_ID = $el->Add($arLoadProductArray)):
         $request = 'Success';
-    else
+        $responceTrial = Array('status'=>'success','id'=>$PRODUCT_ID);
+
+
+    else:
         $request = 'Error';
+    endif;
 
+if($_REQUEST["trial"]):
+    $iblock_id=0;
+    if (CModule::IncludeModule("iblock")):
+        # show url my elements
+        $my_elements = CIBlockElement::GetList (
+            Array("ID" => "ASC"),
+            Array("IBLOCK_CODE" => 'TRIAL',
+                'PROPERTY_SCHOOL_ID'=>$schoolID),
+            false,
+            false,
+            Array('ID', 'IBLOCK_ID')
+        );
 
+        while($ar_fields = $my_elements->GetNext())
+        {
+            $iblock_id=$ar_fields['IBLOCK_ID'];
+        }
+    endif;
+
+    $el_id = $_REQUEST["trial"];
+    $prop['STATUS'] = 1;
+    $PROP['PROPERTY_SCHOOL_ID']= $schoolID;
+    CIBlockElement::SetPropertyValuesEx($el_id, $iblock_id, $prop);
+    endif;
 
 else:
     $responce =  $user->LAST_ERROR;
 endif;
+if($_REQUEST['trial']):
+    echo json_encode($responceTrial);
+else:
 echo json_encode($responce);
+endif;
 ?>

@@ -19,20 +19,20 @@ function UserAddLessons($id,$val){
     lessonProc($order['USER_ID'], $macciw['QUANTITY'], 'add');
 
 
-        $sum = $order['SUM_PAID'];
-    $desc = "Зачисление средств на счет";
-
-        $d =  CSaleUserAccount::UpdateAccount(
-            $order['USER_ID'],
-            $sum,
-            "RUB",
-            $desc,
-            $desc
-        );
-        if($d){
-            echo json_encode("success");
-        }
-        else{
-            echo "error";
-        }
+//        $sum = $order['SUM_PAID'];
+//    $desc = "Зачисление средств на счет";
+//
+//        $d =  CSaleUserAccount::UpdateAccount(
+//            $order['USER_ID'],
+//            $sum,
+//            "RUB",
+//            $desc,
+//            $desc
+//        );
+//        if($d){
+//            echo json_encode("success");
+//        }
+//        else{
+//            echo "error";
+//        }
 }

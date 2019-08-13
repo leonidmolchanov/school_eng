@@ -25,6 +25,7 @@ if(CModule::IncludeModule("iblock"))
 $el = new CIBlockElement;
 
 $PROP = array();
+$PROP['SCHOOL_ID']=$schoolID;
 if(!empty(json_decode($_REQUEST['be']))):
 $PROP["BE"] = json_decode($_REQUEST['be']);
 endif;
@@ -36,6 +37,7 @@ $PROP["DISEASE"] = json_decode($_REQUEST['disease']);
 endif;
 $PROP["GROUPID"]  = json_decode($_REQUEST['groupid']);
 $PROP["LESSONID"] = json_decode($_REQUEST['lessonid']);
+$PROP["SUB"] = json_decode($_REQUEST['sub']);
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

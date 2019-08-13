@@ -7,11 +7,15 @@
  */
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Журнал");
+$rsUser = CUser::GetByID($USER->GetID());
+$arUser = $rsUser->Fetch();
+$schoolID =  $arUser['UF_SCHOOL_ID'];
 ?>
 <?$APPLICATION->IncludeComponent(
     "bitrix:news",
     "journal",
     array(
+        "FILTER_NAME" => "schoolFilter",
         "ADD_ELEMENT_CHAIN" => "N",
         "ADD_SECTIONS_CHAIN" => "Y",
         "AJAX_MODE" => "N",

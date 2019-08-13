@@ -26,8 +26,12 @@ if(CModule::IncludeModule("iblock"))
 $el = new CIBlockElement;
 
 $PROP = array();
+$PROP['SCHOOL_ID']=$schoolID;
 $PROP["TEACHER"] = $_REQUEST["teacherGroup"];  // учитель для группы
 $PROP["LESSON_COST"] = $_REQUEST["lessoncost"];
+$PROP["LENGTH"] = $_REQUEST["length"];
+$PROP["PLACE"] = $_REQUEST["place"];
+
 $arLoadProductArray = Array(
     "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
     "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела

@@ -20,7 +20,7 @@ if (CModule::IncludeModule("iblock")):
             '<=DATE_CREATE' => $dateEND,),
         false,
         false,
-        Array('ID', 'NAME','PROPERTY_LESSONID','PROPERTY_BE')
+        Array('ID', 'NAME','PROPERTY_LESSONID','PROPERTY_BE',)
     );
 
     while ($ar_fields = $my_elements->GetNextElement()) {
@@ -125,7 +125,7 @@ if (CModule::IncludeModule("iblock")):
         Array("IBLOCK_CODE" => 'LESSON', 'ID'=>$lessonArr),
         false,
         false,
-        Array('ID', 'NAME', 'PROPERTY_COST')
+        Array('ID', 'NAME', 'PROPERTY_COST', 'PROPERTY_SUB')
     );
 
     while($ar_fields = $my_elements->GetNext())
@@ -149,27 +149,32 @@ if (CModule::IncludeModule("iblock")):
         $userId[$ar_fields['ID']]= $ar_fields['PROPERTY_USERID_VALUE'];
     }
 endif;
-    foreach ($cost as $transaction){
-if($lesson[$transaction['LESSONID']]['PROPERTY_COST_VALUE']){
-//    $sum = "-".$lesson[$transaction['LESSONID']]['PROPERTY_COST_VALUE'];
-//    $desc = "Списание средств за урок ".$lesson[$transaction['LESSONID']]['NAME'];
-//
-//        $d =  CSaleUserAccount::UpdateAccount(
-//            $userId[$transaction['USERID']],
-//            $sum,
-//            "RUB",
-//            $desc,
-//            $desc
-//        );
-//        if($d){
-//            echo json_encode("success");
-//        }
-//        else{
-//            echo "error";
-//        }
-}
-    lessonProc($transaction['USERID'],1,'modify');
+    foreach ($cost as $transaction) {
+       if ($lesson[$transaction['LESSONID']]['PROPERTY_SUB_VALUE']=='1'){
+        if ($lesson[$transaction['LESSONID']]['PROPERTY_COST_VALUE']) {
 
+    $sum = "-".$lesson[$transaction['LESSONID']]['PROPERTY_COST_VALUE'];
+    $desc = "Списание средств за доп урок ".$lesson[$transaction['LESSONID']]['NAME'];
+
+        $d =  CSaleUserAccount::UpdateAccount(
+            $userId[$transaction['USERID']],
+            $sum,
+            "RUB",
+            $desc,
+            $desc
+        );
+        if($d){
+            echo json_encode("success");
+        }
+        else{
+            echo "error";
+        }
+        }
+
+    }
+else {
+    lessonProc($transaction['USERID'], 1, 'modify');
+}
     }
 
 endif;

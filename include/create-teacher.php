@@ -63,6 +63,8 @@ if (intval($ID) > 0):
     $PROP["BIRTHDAY"] = $date;
     $PROP["TEL"] = $_REQUEST["tel"];
     $PROP["USER"] = $ID;
+    $PROP['SCHOOL_ID']= $schoolID;
+
     $arLoadProductArray = Array(
         "MODIFIED_BY"    => $USER->GetID(), // элемент изменен текущим пользователем
         "IBLOCK_SECTION_ID" => false,          // элемент лежит в корне раздела
@@ -72,11 +74,22 @@ if (intval($ID) > 0):
         "ACTIVE"         => "Y"
     );
 
-    if($PRODUCT_ID = $el->Add($arLoadProductArray))
-        $request = 'Success';
-    else
-        $request = 'Error';
+    if($PRODUCT_ID = $el->Add($arLoadProductArray)){
 
+        $user = new CUser;
+        $fields = Array(
+            "UF_SCHOOL_ID"          => $schoolID,
+        );
+        $user->Update($ID, $fields);
+        $strError .= $user->LAST_ERROR;
+        if($strError) {
+            $request = 'Error';
+        }
+        else{
+            $request = 'Success';}}
+    else {
+        $request = 'Error';
+    }
 
 
 else:
